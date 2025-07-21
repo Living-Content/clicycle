@@ -1,0 +1,123 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "clicycle"
+version = "0.1.0"
+description = "HTML-like CLI framework with self-spacing components and Rich theming"
+authors = [
+    {name = "Living Content", email = "hello@livingcontent.co"},
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Shells",
+    "Topic :: Terminals",
+]
+keywords = ["cli", "rich", "terminal", "ui", "components"]
+dependencies = [
+    "rich>=13.9.4",
+    "click>=8.2.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.4.1",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.12.4",
+    "mypy>=1.17.0",
+    "types-click>=7.1.8",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/clicycle"
+Repository = "https://github.com/yourusername/clicycle.git"
+Issues = "https://github.com/yourusername/clicycle/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/clicycle"]
+
+[tool.ruff]
+target-version = "py38"
+line-length = 88
+exclude = [
+    ".venv",
+    "migrations",
+    "node_modules",
+    "__pycache__",
+    "build",
+    "dist",
+    "*.ipynb"
+]
+
+[tool.ruff.lint]
+select = [
+    "F",    # pyflakes
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "S",    # bandit security checks
+    "T20",  # flake8-print
+    "C90",  # McCabe complexity
+    "N",    # pep8-naming
+    "A",    # flake8-builtins
+    "ARG",  # flake8-unused-arguments
+    "PTH",  # flake8-use-pathlib
+    "RET",  # flake8-return
+    "SIM",  # flake8-simplify
+    "LOG",  # flake8-logging
+]
+
+ignore = [
+    "E501",  # line too long
+    "B008",  # function call in default argument
+    "S101",  # assert used (common in tests)
+    "T201",  # print found (allow intentional CLI output)
+    "S603",  # subprocess call without shell=True (if you use subprocess safely)
+    "S607",  # starting process with partial executable path
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "ARG001", "S105", "S106"]  # Allow asserts, unused args, hardcoded passwords in tests
+
+[tool.mypy]
+python_version = "3.8"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=clicycle",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+]

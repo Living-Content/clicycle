@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environments
+.venv/
+venv/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Testing
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+coverage.json
+.pytest_cache/
+.tox/
+.nox/
+
+# Tools
+.ruff_cache/
+.mypy_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+uv.lock
+.pdm-python
+.python-version
+
+# Logs
+*.log
+
+# Documentation
+docs/_build/
+site/
+
+# Temporary files
+*.tmp
+*.bak
+*~
+.*.swp
+.*.swo
