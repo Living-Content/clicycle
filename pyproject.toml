@@ -43,9 +43,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/clicycle"
-Repository = "https://github.com/yourusername/clicycle.git"
-Issues = "https://github.com/yourusername/clicycle/issues"
+Homepage = "https://github.com/Living-Content/clicycle"
+Repository = "https://github.com/Living-Content/clicycle.git"
+Issues = "https://github.com/Living-Content/clicycle/issues"
+Documentation = "https://github.com/Living-Content/clicycle#readme"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/clicycle"]
