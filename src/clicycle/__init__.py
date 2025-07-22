@@ -5,7 +5,7 @@ from .instance import configure, get_default_cli
 from .prompts import select_from_list
 from .theme import ComponentSpacing, Icons, Layout, Theme, Typography
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 
 def header(
@@ -150,7 +150,7 @@ __all__ = [
     "prompt",
     "confirm",
     "summary",
-    "list",
+    "list_item",
     "spinner",
     "table",
     "code",

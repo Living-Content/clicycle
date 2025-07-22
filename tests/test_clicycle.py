@@ -57,8 +57,8 @@ class TestClicycle:
         cli = Clicycle()
 
         # This should not raise an exception
-        cli.list("First item")
-        cli.list("Second item")
+        cli.list_item("First item")
+        cli.list_item("Second item")
 
     def test_section(self):
         """Test section rendering."""

@@ -162,9 +162,9 @@ def status():
     # Recent activity
     cli.section("Recent Activity")
     with cli.block():
-        cli.list("Processed 150 files in the last hour")
-        cli.list("Validated 45 configurations today")
-        cli.list("Exported 12 reports this week")
+        cli.list_item("Processed 150 files in the last hour")
+        cli.list_item("Validated 45 configurations today")
+        cli.list_item("Exported 12 reports this week")
 
 
 @main.command()

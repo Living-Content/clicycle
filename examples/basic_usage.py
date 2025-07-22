@@ -26,9 +26,9 @@ def main():
     cli.section("Lists")
     with cli.block():
         cli.info("Here are some list items:")
-        cli.list("First item in the list")
-        cli.list("Second item in the list")
-        cli.list("Third item in the list")
+        cli.list_item("First item in the list")
+        cli.list_item("Second item in the list")
+        cli.list_item("Third item in the list")
 
     # Section: Data Display
     cli.section("Data Display")
@@ -103,7 +103,7 @@ for i in range(10):
     cli.info("The following would be interactive in a real application:")
     cli.info("• name = cli.prompt('What is your name?')")
     cli.info("• confirmed = cli.confirm('Do you want to continue?')")
-    cli.info("• choice = select_from_list('option', ['A', 'B', 'C'])")
+    cli.info("• choice = select_from_list_item('option', ['A', 'B', 'C'])")
 
     # Section: Suggestions
     cli.suggestions(
