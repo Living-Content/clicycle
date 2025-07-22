@@ -291,8 +291,8 @@ def main(verbose):
     if verbose:
         # A simple way to let clicycle know about verbosity
         # is to configure it or handle it in your logic.
-        # For this example, we'll just print a debug message.
-        clicycle.debug("Verbose mode enabled.")
+        # For this example, we'll just print a warning message.
+        clicycle.warning("Verbose mode enabled.")
 
     clicycle.configure(app_name="MyApp")
     clicycle.header("My Application", "Version 1.0")
@@ -301,6 +301,20 @@ def main(verbose):
 
 if __name__ == '__main__':
     main()
+```
+
+You can access the verbose flag in your Click command by using the `click.get_current_context()` function.
+
+```python
+import click
+
+@click.command()
+@click.option('--verbose', '-v', is_flag=True, help="Enable verbose output.")
+def main(verbose):
+    context = click.get_current_context()
+    if context.params.get('verbose'):
+        clicycle.warning("Verbose mode enabled.")
+        # more logic here
 ```
 
 ## API Reference

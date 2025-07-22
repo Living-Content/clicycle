@@ -169,7 +169,7 @@ class Clicycle:
         """Render summary component."""
         self.stream.render(Summary(self.theme, data))
 
-    def list(self, item: str) -> None:
+    def list_item(self, item: str) -> None:
         """Render list text with bullet point."""
         # Fast path: calculate spacing but render directly
         component = Text(self.theme, item, "list")
@@ -282,7 +282,7 @@ class Clicycle:
         self.section("Suggestions")
         with self.block():
             for suggestion in suggestions:
-                self.list(suggestion)
+                self.list_item(suggestion)
 
     @contextmanager
     def block(self):
