@@ -1,19 +1,15 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "clicycle"
-version = "0.1.0"
-description = "HTML-like CLI framework with self-spacing components and Rich theming"
-authors = [
-    {name = "Living Content", email = "hello@livingcontent.co"},
-]
+description = "A Python CLI framework with self-spacing components and Rich theming"
 readme = "README.md"
-license = {text = "MIT"}
+dynamic = ["version"]
 requires-python = ">=3.8"
+license = "MIT"
+authors = [
+    { name = "Living Content", email = "hello@livingcontent.co" },
+]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
@@ -22,16 +18,16 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: System :: Shells",
-    "Topic :: Terminals",
 ]
-keywords = ["cli", "rich", "terminal", "ui", "components"]
 dependencies = [
     "rich>=13.9.4",
     "click>=8.2.1",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Living-Content/clicycle"
+Repository = "https://github.com/Living-Content/clicycle"
+Issues = "https://github.com/Living-Content/clicycle/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -40,19 +36,19 @@ dev = [
     "ruff>=0.12.4",
     "mypy>=1.17.0",
     "types-click>=7.1.8",
+    "build",
+    "twine",
 ]
 
-[project.urls]
-Homepage = "https://github.com/Living-Content/clicycle"
-Repository = "https://github.com/Living-Content/clicycle.git"
-Issues = "https://github.com/Living-Content/clicycle/issues"
-Documentation = "https://github.com/Living-Content/clicycle#readme"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/clicycle"]
+[tool.hatch.version]
+path = "src/clicycle/__init__.py"
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py312"
 line-length = 88
 exclude = [
     ".venv",
@@ -98,6 +94,7 @@ max-complexity = 10
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101", "ARG001", "S105", "S106"]  # Allow asserts, unused args, hardcoded passwords in tests
+"**/migrations/*" = ["N806"]  # Allow non-lowercase variable names in migrations 
 
 [tool.mypy]
 python_version = "3.8"
