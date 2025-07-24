@@ -190,6 +190,9 @@ class Clicycle:
         if self.is_verbose:
             self.info(message)
             yield
+        elif self._progress is not None:
+            # We're inside a progress context, just squelch the spinner
+            yield
         else:
             # Render spinner component for spacing, then show actual spinner
             self.stream.render(Spinner(self.theme, message))
@@ -226,27 +229,31 @@ class Clicycle:
     @contextmanager
     def progress(self, description: str = "Processing") -> Iterator[Clicycle]:
         """Context manager for progress tracking."""
-        # Render progress component for spacing
-        self.stream.render(ProgressBar(self.theme, description))
-
-        progress = Progress(
-            BarColumn(),
-            TaskProgressColumn(),
-            TextColumn(
-                "[progress.description]{task.description}",
-                table_column=Column(width=50),
-            ),
-            console=self.console,
-        )
-
-        self._progress = progress
-        self._task_id = progress.add_task("", total=100)
-
-        with progress:
+        if self._progress is not None:
+            # We're already in a progress context, just squelch the nested one
             yield self
+        else:
+            # Render progress component for spacing
+            self.stream.render(ProgressBar(self.theme, description))
 
-        self._progress = None
-        self._task_id = None
+            progress = Progress(
+                BarColumn(),
+                TaskProgressColumn(),
+                TextColumn(
+                    "[progress.description]{task.description}",
+                    table_column=Column(width=50),
+                ),
+                console=self.console,
+            )
+
+            self._progress = progress
+            self._task_id = progress.add_task("", total=100)
+
+            with progress:
+                yield self
+
+            self._progress = None
+            self._task_id = None
 
     @contextmanager
     def multi_progress(self, description: str = "Processing") -> Iterator[Progress]:
