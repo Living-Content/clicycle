@@ -71,12 +71,12 @@ jobs:
     
     - name: Build package
       run: |
-        uv pip install build
+        uv pip install --system build
         uv run python -m build
     
     - name: Check distribution
       run: |
-        uv pip install twine
+        uv pip install --system twine
         uv run twine check dist/*
     
     - name: Upload artifacts
