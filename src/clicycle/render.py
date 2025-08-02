@@ -139,7 +139,11 @@ class Text(Component):
             icon = icon_map.get(self.text_type, self.theme.icons.info)
             style = style_map.get(self.text_type, self.theme.typography.info_style)
 
-        console.print(f"{icon} {self.text}", style=style)
+        # Get indentation for this text type
+        indent_spaces = getattr(self.theme.indentation, self.text_type, 0)
+        indent = " " * indent_spaces
+
+        console.print(f"{indent}{icon} {self.text}", style=style)
 
 
 class Table(Component):
@@ -396,7 +400,8 @@ class List(Component):
         """Render bulleted list."""
         for item in self.items:
             bullet = self.theme.icons.bullet
-            console.print(f"{bullet} {item}", style=self.theme.typography.info_style)
+            indent = " " * self.theme.indentation.list
+            console.print(f"{indent}{bullet} {item}", style=self.theme.typography.info_style)
 
 
 class RenderStream:
