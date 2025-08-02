@@ -1,5 +1,11 @@
 # Clicycle
 
+[![CI](https://github.com/Living-Content/clicycle/actions/workflows/ci.yml/badge.svg)](https://github.com/Living-Content/clicycle/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/Living-Content/clicycle/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/Living-Content/clicycle)
+[![PyPI version](https://badge.fury.io/py/clicycle.svg)](https://badge.fury.io/py/clicycle)
+[![Python Versions](https://img.shields.io/pypi/pyversions/clicycle.svg)](https://pypi.org/project/clicycle/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 > A Python CLI framework with self-spacing components and Rich theming
 
 **Clicycle** is a modern Python CLI framework that provides a simple functional API and powerful component-based system for building beautiful command-line interfaces.
@@ -11,12 +17,14 @@ It features automatic spacing, Rich theming, and an intuitive API that lets you 
 - **Simple Functional API** - Import and use functions directly (e.g., `clicycle.info()`).
 - **Rich theming** - Comprehensive styling with icons, typography, and layout controls.
 - **Automatic spacing** - Components manage their own spacing like HTML elements.
+- **Customizable indentation** - Per-component indentation control for perfect alignment.
 - **Component-based** - Familiar React/HTML-like API with composable components.
 - **Type-safe** - Full type hints and IDE support.
 - **Smart tables** - Automatically sized columns with intelligent formatting.
 - **Code highlighting** - Syntax-highlighted code blocks with line numbers.
 - **Progress tracking** - Built-in progress bars and spinners.
 - **Interactive prompts** - Properly spaced input prompts and confirmations.
+- **100% test coverage** - Thoroughly tested for reliability.
 
 ## Installation
 
@@ -252,7 +260,7 @@ clicycle.summary(summary_data)
 Clicycle's theming is highly customizable. You can pass a `Theme` object to `clicycle.configure()` or a `Clicycle` instance.
 
 ```python
-from clicycle import Theme, Icons, Typography, configure
+from clicycle import Theme, Icons, Typography, ComponentIndentation, configure
 
 # Create a custom theme
 custom_theme = Theme(
@@ -263,6 +271,11 @@ custom_theme = Theme(
     typography=Typography(
         header_style="bold magenta",
         info_style="bold blue",
+    ),
+    indentation=ComponentIndentation(
+        list=4,      # 4 spaces for list items
+        success=2,   # 2 spaces for success messages
+        error=0,     # No indentation for errors
     )
 )
 
@@ -271,6 +284,7 @@ configure(theme=custom_theme)
 
 # Now all functional calls will use the new theme
 clicycle.success("Theme updated successfully!")
+clicycle.list_item("This will be indented 4 spaces")
 ```
 
 ## Advanced Usage
