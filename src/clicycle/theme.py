@@ -112,6 +112,18 @@ class ComponentSpacing:
 
 
 @dataclass
+class ComponentIndentation:
+    """Indentation rules for components - number of spaces per text type."""
+
+    info: int = 0
+    success: int = 0
+    error: int = 0
+    warning: int = 0
+    debug: int = 0
+    list: int = 2  # list_item defaults to two spaces
+
+
+@dataclass
 class Theme:
     """Complete theme configuration."""
 
@@ -119,6 +131,7 @@ class Theme:
     typography: Typography = field(default_factory=Typography)
     layout: Layout = field(default_factory=Layout)
     spacing: ComponentSpacing = field(default_factory=ComponentSpacing)
+    indentation: ComponentIndentation = field(default_factory=ComponentIndentation)
 
     # Layout basics
     width: int = 100

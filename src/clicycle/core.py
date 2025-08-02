@@ -51,6 +51,12 @@ class Clicycle:
         self._progress: Progress | None = None
         self._task_id: TaskID | None = None
 
+    # -----------------------------
+    # Cmponents
+    # -----------------------------
+
+    # Organization
+
     def header(
         self, title: str, subtitle: str | None = None, app_name: str | None = None
     ) -> None:
@@ -63,6 +69,8 @@ class Clicycle:
         """Render section component."""
         self.stream.render(Section(self.theme, title))
 
+    # Text
+
     def info(self, message: str) -> None:
         """Render info message."""
         # Fast path: calculate spacing but render directly
@@ -73,7 +81,8 @@ class Clicycle:
 
         # Direct console output with cached styles
         icon = self.theme._style_cache.get("info_icon", f"{self.theme.icons.info} ")
-        self.console.print(f"{icon}{message}", style=self.theme.typography.info_style)
+        indent = " " * self.theme.indentation.info
+        self.console.print(f"{indent}{icon}{message}", style=self.theme.typography.info_style)
 
         # Update render history
         self.stream.history.append(component)
@@ -90,8 +99,9 @@ class Clicycle:
         icon = self.theme._style_cache.get(
             "success_icon", f"{self.theme.icons.success} "
         )
+        indent = " " * self.theme.indentation.success
         self.console.print(
-            f"{icon}{message}", style=self.theme.typography.success_style
+            f"{indent}{icon}{message}", style=self.theme.typography.success_style
         )
 
         # Update render history
@@ -107,7 +117,8 @@ class Clicycle:
 
         # Direct console output with cached styles
         icon = self.theme._style_cache.get("error_icon", f"{self.theme.icons.error} ")
-        self.console.print(f"{icon}{message}", style=self.theme.typography.error_style)
+        indent = " " * self.theme.indentation.error
+        self.console.print(f"{indent}{icon}{message}", style=self.theme.typography.error_style)
 
         # Update render history
         self.stream.history.append(component)
@@ -124,9 +135,26 @@ class Clicycle:
         icon = self.theme._style_cache.get(
             "warning_icon", f"{self.theme.icons.warning} "
         )
+        indent = " " * self.theme.indentation.warning
         self.console.print(
-            f"{icon}{message}", style=self.theme.typography.warning_style
+            f"{indent}{icon}{message}", style=self.theme.typography.warning_style
         )
+
+        # Update render history
+        self.stream.history.append(component)
+
+    def list_item(self, item: str) -> None:
+        """Render list text with bullet point."""
+        # Fast path: calculate spacing but render directly
+        component = Text(self.theme, item, "list")
+        spacing = component.spacing_before(self.stream.last_component)
+        if spacing > 0:
+            self.console.print("\n" * spacing, end="")
+
+        # Direct console output with cached styles
+        icon = self.theme._style_cache.get("bullet_icon", f"{self.theme.icons.bullet} ")
+        indent = " " * self.theme.indentation.list
+        self.console.print(f"{indent}{icon}{item}", style=self.theme.typography.info_style)
 
         # Update render history
         self.stream.history.append(component)
@@ -144,12 +172,15 @@ class Clicycle:
             icon = self.theme._style_cache.get(
                 "debug_icon", f"{self.theme.icons.debug} "
             )
+            indent = " " * self.theme.indentation.debug
             self.console.print(
-                f"{icon}{message}", style=self.theme.typography.debug_style
+                f"{indent}{icon}{message}", style=self.theme.typography.debug_style
             )
 
             # Update render history
             self.stream.history.append(component)
+
+    # Input
 
     def prompt(self, text: str, **kwargs):
         """Render a prompt with proper spacing."""
@@ -165,24 +196,57 @@ class Clicycle:
         # Then call click.confirm() which will appear with proper spacing
         return click.confirm(text, **kwargs)
 
+    # Output Helpers
+
+    @contextmanager
+    def block(self):
+        """Context manager for grouped content with automatic nested block spacing."""
+        # Store the current stream and console
+        original_stream = self.stream
+        original_console = self.console
+
+        with Path("/dev/null").open("w") as dev_null_file:
+            # Create temporary console and stream that won't actually display anything
+            temp_console = Console(width=self.width, file=dev_null_file)
+            temp_stream = RenderStream(temp_console)
+
+            # Temporarily replace both the stream and console
+            self.stream = temp_stream
+            self.console = temp_console
+
+            try:
+                yield self
+            finally:
+                # The 'with' statement handles closing the file.
+
+                # Get all the components that were rendered to the temp stream
+                components = temp_stream.history
+
+                # Restore original stream and console
+                self.stream = original_stream
+                self.console = original_console
+
+                # Render as block
+                if components:
+                    self.stream.render(Block(self.theme, components))
+
+    def clear(self) -> None:
+        """Clear terminal and reset context."""
+        self.console.clear()
+        self.stream.clear_history()
+
+    def suggestions(self, suggestions: list[str]) -> None:
+        """Render suggestions list."""
+        self.section("Suggestions")
+        with self.block():
+            for suggestion in suggestions:
+                self.list_item(suggestion)
+
     def summary(self, data: list[dict[str, str | int | float | bool | None]]) -> None:
         """Render summary component."""
         self.stream.render(Summary(self.theme, data))
 
-    def list_item(self, item: str) -> None:
-        """Render list text with bullet point."""
-        # Fast path: calculate spacing but render directly
-        component = Text(self.theme, item, "list")
-        spacing = component.spacing_before(self.stream.last_component)
-        if spacing > 0:
-            self.console.print("\n" * spacing, end="")
-
-        # Direct console output with cached styles
-        icon = self.theme._style_cache.get("bullet_icon", f"{self.theme.icons.bullet} ")
-        self.console.print(f"{icon}{item}", style=self.theme.typography.info_style)
-
-        # Update render history
-        self.stream.history.append(component)
+    # Progress
 
     @contextmanager
     def spinner(self, message: str):
@@ -202,29 +266,6 @@ class Clicycle:
                 spinner_style=self.theme.typography.info_style,
             ):
                 yield
-
-    def table(
-        self,
-        data: list[dict[str, str | int | float | bool | None]],
-        title: str | None = None,
-    ) -> None:
-        """Render table component."""
-        self.stream.render(Table(self.theme, data, title))
-
-    def code(
-        self,
-        code: str,
-        language: str = "python",
-        title: str | None = None,
-        line_numbers: bool = True,
-    ) -> None:
-        """Render code component."""
-        self.stream.render(Code(self.theme, code, language, title, line_numbers))
-
-    def json(self, data: dict, title: str | None = None) -> None:
-        """Render JSON as code."""
-        json_str = json.dumps(data, indent=2, default=str)
-        self.stream.render(Code(self.theme, json_str, "json", title))
 
     @contextmanager
     def progress(self, description: str = "Processing") -> Iterator[Clicycle]:
@@ -277,56 +318,36 @@ class Clicycle:
         with progress as p:
             yield p
 
-    def update_progress(self, percent: float, message: str | None = None) -> None:
-        """Update progress bar."""
-        if self._progress and self._task_id is not None:
-            if message:
-                self._progress.update(self._task_id, description=message)
-            self._progress.update(self._task_id, completed=percent)
+    # Tables
 
-    def suggestions(self, suggestions: list[str]) -> None:
-        """Render suggestions list."""
-        self.section("Suggestions")
-        with self.block():
-            for suggestion in suggestions:
-                self.list_item(suggestion)
+    def table(
+        self,
+        data: list[dict[str, str | int | float | bool | None]],
+        title: str | None = None,
+    ) -> None:
+        """Render table component."""
+        self.stream.render(Table(self.theme, data, title))
 
-    @contextmanager
-    def block(self):
-        """Context manager for grouped content with automatic nested block spacing."""
-        # Store the current stream and console
-        original_stream = self.stream
-        original_console = self.console
+    # Code
 
-        with Path("/dev/null").open("w") as dev_null_file:
-            # Create temporary console and stream that won't actually display anything
-            temp_console = Console(width=self.width, file=dev_null_file)
-            temp_stream = RenderStream(temp_console)
+    def code(
+        self,
+        code: str,
+        language: str = "python",
+        title: str | None = None,
+        line_numbers: bool = True,
+    ) -> None:
+        """Render code component."""
+        self.stream.render(Code(self.theme, code, language, title, line_numbers))
 
-            # Temporarily replace both the stream and console
-            self.stream = temp_stream
-            self.console = temp_console
+    def json(self, data: dict, title: str | None = None) -> None:
+        """Render JSON as code."""
+        json_str = json.dumps(data, indent=2, default=str)
+        self.stream.render(Code(self.theme, json_str, "json", title))
 
-            try:
-                yield self
-            finally:
-                # The 'with' statement handles closing the file.
-
-                # Get all the components that were rendered to the temp stream
-                components = temp_stream.history
-
-                # Restore original stream and console
-                self.stream = original_stream
-                self.console = original_console
-
-                # Render as block
-                if components:
-                    self.stream.render(Block(self.theme, components))
-
-    def clear(self) -> None:
-        """Clear terminal and reset context."""
-        self.console.clear()
-        self.stream.clear_history()
+    # -----------------------------
+    # Helpers
+    # -----------------------------
 
     @property
     def is_verbose(self) -> bool:
@@ -336,3 +357,10 @@ class Clicycle:
             return ctx.obj.get("verbose", False) if ctx.obj else False
         except RuntimeError:
             return False
+
+    def update_progress(self, percent: float, message: str | None = None) -> None:
+        """Update progress bar."""
+        if self._progress and self._task_id is not None:
+            if message:
+                self._progress.update(self._task_id, description=message)
+            self._progress.update(self._task_id, completed=percent)

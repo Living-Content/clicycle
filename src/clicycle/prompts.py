@@ -22,11 +22,8 @@ def select_from_list(
 
     prompt_text = f"Select a {item_name}"
     if default and default in options:
-        try:
-            default_index = options.index(default) + 1
-            prompt_text += f" (default: {default_index})"
-        except ValueError:
-            default_index = None  # Should not happen, but for safety
+        default_index = options.index(default) + 1
+        prompt_text += f" (default: {default_index})"
     else:
         default_index = None
 
