@@ -140,7 +140,7 @@ class Theme:
     # Performance optimization: cached formatted styles
     _style_cache: dict[str, str] = field(default_factory=dict, init=False, repr=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Pre-compute and cache frequently used style combinations."""
         self._style_cache.update(
             {
@@ -153,7 +153,7 @@ class Theme:
             }
         )
 
-    def transform_text(self: Theme, text: str, transform: str) -> str:
+    def transform_text(self, text: str, transform: str) -> str:
         """Apply text transformation."""
         if transform == "upper":
             return text.upper()

@@ -34,4 +34,4 @@ def select_from_list(
             f"Invalid selection. Please choose a number between 1 and {len(options)}."
         )
 
-    return options[choice - 1]
+    return str(options[choice - 1])

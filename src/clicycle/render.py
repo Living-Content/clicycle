@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 from rich import table
 from rich.console import Console
@@ -30,7 +31,7 @@ class Component(ABC):
         spacing_rules = getattr(self.theme.spacing, self.component_type, {})
 
         if previous.component_type in spacing_rules:
-            return spacing_rules[previous.component_type]
+            return int(spacing_rules[previous.component_type])
         return 1  # Default spacing
 
     @abstractmethod
@@ -260,7 +261,7 @@ class Code(Component):
             num_lines = self.code.count("\\n") + 1
             if num_lines > 0:
                 gutter_width = len(str(num_lines)) + 4
-                padding = (0, 0, 0, gutter_width)  # top, right, bottom, left
+                padding = (0, 0, 0, gutter_width)  # type: ignore[assignment]  # top, right, bottom, left
 
         syntax = Syntax(
             self.code,
@@ -362,7 +363,7 @@ class Prompt(Component):
 
     component_type = "prompt"
 
-    def __init__(self, theme: Theme, text: str, **kwargs):
+    def __init__(self, theme: Theme, text: str, **kwargs: Any) -> None:
         super().__init__(theme)
         self.text = text
         self.kwargs = kwargs
@@ -370,6 +371,7 @@ class Prompt(Component):
     def render(self, console: Console) -> None:
         """Render prompt - this will be called for spacing, then click.prompt() called separately."""
         # This component exists only for spacing - the actual prompt is handled by Clicycle.prompt()
+        pass
 
 
 class Confirm(Component):
@@ -377,7 +379,7 @@ class Confirm(Component):
 
     component_type = "confirm"
 
-    def __init__(self, theme: Theme, text: str, **kwargs):
+    def __init__(self, theme: Theme, text: str, **kwargs: Any) -> None:
         super().__init__(theme)
         self.text = text
         self.kwargs = kwargs
@@ -385,6 +387,7 @@ class Confirm(Component):
     def render(self, console: Console) -> None:
         """Render confirm - this will be called for spacing, then cli.confirm() called separately."""
         # This component exists only for spacing - the actual confirm is handled by Clicycle.confirm()
+        pass
 
 
 class List(Component):

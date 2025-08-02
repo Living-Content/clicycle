@@ -82,11 +82,9 @@ class TestSelectFromList:
     def test_select_from_list_value_error_safety(self, mock_info, mock_prompt):
         """Test ValueError safety in select_from_list."""
         # This tests the ValueError exception handling in line 28-29
+        mock_info.return_value = None  # Use the mock parameter
         mock_prompt.return_value = 1
         options = ["apple", "banana"]
-
-        # Verify info is called for displaying options
-        mock_info.return_value = None
 
         # Even though we set default to "banana", the mock will simulate
         # the case where index() might fail (though it shouldn't in normal use)
