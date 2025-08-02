@@ -6,6 +6,7 @@ import json
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Any
 
 import click
 from rich.console import Console
@@ -182,14 +183,14 @@ class Clicycle:
 
     # Input
 
-    def prompt(self, text: str, **kwargs):
+    def prompt(self, text: str, **kwargs: Any) -> Any:
         """Render a prompt with proper spacing."""
         # Render the Prompt component for spacing
         self.stream.render(Prompt(self.theme, text, **kwargs))
         # Then call click.prompt() which will appear with proper spacing
         return click.prompt(text, **kwargs)
 
-    def confirm(self, text: str, **kwargs):
+    def confirm(self, text: str, **kwargs: Any) -> Any:
         """Render a confirm with proper spacing."""
         # Render the Confirm component for spacing
         self.stream.render(Confirm(self.theme, text, **kwargs))
@@ -199,7 +200,7 @@ class Clicycle:
     # Output Helpers
 
     @contextmanager
-    def block(self):
+    def block(self) -> Iterator[Clicycle]:
         """Context manager for grouped content with automatic nested block spacing."""
         # Store the current stream and console
         original_stream = self.stream
@@ -249,7 +250,7 @@ class Clicycle:
     # Progress
 
     @contextmanager
-    def spinner(self, message: str):
+    def spinner(self, message: str) -> Iterator[None]:
         """Context manager for spinner."""
         if self.is_verbose:
             self.info(message)
@@ -340,7 +341,7 @@ class Clicycle:
         """Render code component."""
         self.stream.render(Code(self.theme, code, language, title, line_numbers))
 
-    def json(self, data: dict, title: str | None = None) -> None:
+    def json(self, data: dict[str, Any], title: str | None = None) -> None:
         """Render JSON as code."""
         json_str = json.dumps(data, indent=2, default=str)
         self.stream.render(Code(self.theme, json_str, "json", title))

@@ -1,11 +1,20 @@
+from collections.abc import Iterator
 from contextlib import contextmanager
+from typing import Any
 
 from .core import Clicycle
 from .instance import configure, get_default_cli
 from .prompts import select_from_list
-from .theme import ComponentIndentation, ComponentSpacing, Icons, Layout, Theme, Typography
+from .theme import (
+    ComponentIndentation,
+    ComponentSpacing,
+    Icons,
+    Layout,
+    Theme,
+    Typography,
+)
 
-__version__ = "1.1.0"
+__version__ = "1.1.2"
 
 
 def header(
@@ -45,12 +54,12 @@ def debug(message: str) -> None:
     get_default_cli().debug(message)
 
 
-def prompt(text: str, **kwargs):
+def prompt(text: str, **kwargs: Any) -> Any:
     """Render a prompt with proper spacing."""
     return get_default_cli().prompt(text, **kwargs)
 
 
-def confirm(text: str, **kwargs):
+def confirm(text: str, **kwargs: Any) -> Any:
     """Render a confirm with proper spacing."""
     return get_default_cli().confirm(text, **kwargs)
 
@@ -66,7 +75,7 @@ def list_item(item: str) -> None:
 
 
 @contextmanager
-def spinner(message: str):
+def spinner(message: str) -> Iterator[None]:
     """Context manager for spinner."""
     with get_default_cli().spinner(message) as s:
         yield s
@@ -90,20 +99,20 @@ def code(
     get_default_cli().code(code_str, language, title, line_numbers)
 
 
-def json(data: dict, title: str | None = None) -> None:
+def json(data: dict[str, Any], title: str | None = None) -> None:
     """Render JSON as code."""
     get_default_cli().json(data, title)
 
 
 @contextmanager
-def progress(description: str = "Processing"):
+def progress(description: str = "Processing") -> Iterator[Clicycle]:
     """Context manager for progress tracking."""
     with get_default_cli().progress(description) as p:
         yield p
 
 
 @contextmanager
-def multi_progress(description: str = "Processing"):
+def multi_progress(description: str = "Processing") -> Iterator[Any]:
     """Context manager for multi-task progress tracking."""
     with get_default_cli().multi_progress(description) as p:
         yield p
@@ -120,7 +129,7 @@ def suggestions(suggestions: list[str]) -> None:
 
 
 @contextmanager
-def block():
+def block() -> Iterator[Clicycle]:
     """Context manager for grouped content."""
     with get_default_cli().block() as b:
         yield b

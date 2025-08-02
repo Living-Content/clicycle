@@ -2,10 +2,7 @@
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 import clicycle
-from clicycle import ComponentSpacing, Icons, Layout, Theme, Typography
 
 
 class TestInitFunctions:
