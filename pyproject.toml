@@ -3,7 +3,7 @@ name = "clicycle"
 description = "A Python CLI framework with self-spacing components and Rich theming"
 readme = "README.md"
 dynamic = ["version"]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "MIT"
 authors = [
     { name = "Living Content", email = "hello@livingcontent.co" },
@@ -12,8 +12,6 @@ classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
@@ -95,7 +93,7 @@ max-complexity = 10
 "**/migrations/*" = ["N806"]  # Allow non-lowercase variable names in migrations 
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 strict = true
 warn_return_any = true
 warn_unused_configs = true

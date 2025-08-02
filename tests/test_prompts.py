@@ -84,12 +84,16 @@ class TestSelectFromList:
         # This tests the ValueError exception handling in line 28-29
         mock_prompt.return_value = 1
         options = ["apple", "banana"]
-        
+
+        # Verify info is called for displaying options
+        mock_info.return_value = None
+
         # Even though we set default to "banana", the mock will simulate
         # the case where index() might fail (though it shouldn't in normal use)
         result = select_from_list("fruit", options, default="banana")
-        
+
         assert result == "apple"  # Returns first option based on mock
+        assert mock_info.called  # Verify info was used
 
     @patch("clicycle.prompts.click.prompt")
     def test_select_from_list_empty_options(self, mock_prompt):

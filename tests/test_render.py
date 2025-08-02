@@ -1,14 +1,10 @@
 """Unit tests for clicycle.render module."""
 
-from unittest.mock import MagicMock, Mock
-
-import pytest
-from rich.console import Console
+from unittest.mock import MagicMock
 
 from clicycle.render import (
     Block,
     Code,
-    Component,
     Confirm,
     Header,
     List,
@@ -37,10 +33,10 @@ class TestComponent:
         """Test spacing calculation with defined rules."""
         theme = Theme()
         theme.spacing.info = {"error": 2}
-        
+
         prev_comp = Text(theme, "error", "error")
         comp = Text(theme, "info", "info")
-        
+
         assert comp.spacing_before(prev_comp) == 2
 
     def test_spacing_before_default(self):
@@ -48,7 +44,7 @@ class TestComponent:
         theme = Theme()
         prev_comp = Text(theme, "test", "custom")
         comp = Text(theme, "info", "info")
-        
+
         assert comp.spacing_before(prev_comp) == 1
 
 
@@ -59,7 +55,7 @@ class TestHeader:
         """Test Header initialization."""
         theme = Theme()
         header = Header(theme, "Title", "Subtitle", "App")
-        
+
         assert header.title == "Title"
         assert header.subtitle == "Subtitle"
         assert header.app_name == "App"
@@ -70,9 +66,9 @@ class TestHeader:
         theme = Theme()
         console = MagicMock()
         header = Header(theme, "Title", "Subtitle", "App")
-        
+
         header.render(console)
-        
+
         calls = console.print.call_args_list
         assert len(calls) >= 1  # At least title
         # Check that app name and title appear in the output
@@ -86,9 +82,9 @@ class TestHeader:
         theme = Theme()
         console = MagicMock()
         header = Header(theme, "Title", "Subtitle")
-        
+
         header.render(console)
-        
+
         calls = console.print.call_args_list
         assert len(calls) >= 1
         all_output = str(calls)
@@ -99,9 +95,9 @@ class TestHeader:
         theme = Theme()
         console = MagicMock()
         header = Header(theme, "Title")
-        
+
         header.render(console)
-        
+
         assert console.print.call_count == 1
 
 
@@ -112,7 +108,7 @@ class TestSection:
         """Test Section initialization."""
         theme = Theme()
         section = Section(theme, "Section Title")
-        
+
         assert section.title == "Section Title"
         assert section.component_type == "section"
 
@@ -121,9 +117,9 @@ class TestSection:
         theme = Theme()
         console = MagicMock()
         section = Section(theme, "Test Section")
-        
+
         section.render(console)
-        
+
         console.rule.assert_called_once()
         args = console.rule.call_args
         assert "TEST SECTION" in args[0][0]  # Transformed to upper
@@ -136,7 +132,7 @@ class TestText:
         """Test Text initialization."""
         theme = Theme()
         text = Text(theme, "Message", "info")
-        
+
         assert text.text == "Message"
         assert text.text_type == "info"
         assert text.component_type == "info"
@@ -146,9 +142,9 @@ class TestText:
         theme = Theme()
         console = MagicMock()
         text = Text(theme, "Info message", "info")
-        
+
         text.render(console)
-        
+
         console.print.assert_called_once()
         args = console.print.call_args
         assert "Info message" in args[0][0]
@@ -159,9 +155,9 @@ class TestText:
         theme = Theme()
         console = MagicMock()
         text = Text(theme, "List item", "list")
-        
+
         text.render(console)
-        
+
         console.print.assert_called_once()
         args = console.print.call_args
         assert "List item" in args[0][0]
@@ -173,9 +169,9 @@ class TestText:
         theme.indentation = ComponentIndentation(info=4)
         console = MagicMock()
         text = Text(theme, "Indented", "info")
-        
+
         text.render(console)
-        
+
         args = console.print.call_args
         assert "    " in args[0][0]  # 4 spaces
         assert "Indented" in args[0][0]
@@ -189,7 +185,7 @@ class TestTable:
         theme = Theme()
         data = [{"col1": "val1"}]
         table = Table(theme, data, "Title")
-        
+
         assert table.data == data
         assert table.title == "Title"
         assert table.component_type == "table"
@@ -199,9 +195,9 @@ class TestTable:
         theme = Theme()
         console = MagicMock()
         table = Table(theme, [], "Title")
-        
+
         table.render(console)
-        
+
         console.print.assert_called_once()
         args = console.print.call_args
         assert "No data to display" in args[0][0]
@@ -215,9 +211,9 @@ class TestTable:
             {"Name": "Test2", "Value": 456}
         ]
         table = Table(theme, data, "Test Table")
-        
+
         table.render(console)
-        
+
         console.print.assert_called_once()
 
     def test_create_base_table(self):
@@ -225,9 +221,9 @@ class TestTable:
         theme = Theme()
         data = [{"col": "val"}]
         table = Table(theme, data)
-        
+
         rich_table = table._create_base_table()
-        
+
         assert rich_table.box == theme.layout.table_box
         assert rich_table.border_style == theme.layout.table_border_style
 
@@ -235,9 +231,9 @@ class TestTable:
         """Test column addition with special header names."""
         theme = Theme()
         data = [{
-            "ID": 1, 
-            "Status": "OK", 
-            "Name": "Test", 
+            "ID": 1,
+            "Status": "OK",
+            "Name": "Test",
             "Message": "Msg",
             "Check": "Health",
             "Frontend URL": "http://example.com",
@@ -245,11 +241,11 @@ class TestTable:
             "Cluster": "main"
         }]
         table = Table(theme, data)
-        
+
         rich_table = table._create_base_table()
         headers = list(data[0].keys())
         table._add_columns(rich_table, headers)
-        
+
         # Should have 8 columns
         assert len(rich_table.columns) == 8
 
@@ -261,12 +257,12 @@ class TestTable:
             {"col1": "val2", "col2": 456}
         ]
         table = Table(theme, data)
-        
+
         rich_table = table._create_base_table()
         headers = list(data[0].keys())
         table._add_columns(rich_table, headers)
         table._add_rows(rich_table)
-        
+
         # Check rows were added
         assert len(rich_table.rows) == 2
 
@@ -278,7 +274,7 @@ class TestCode:
         """Test Code initialization."""
         theme = Theme()
         code = Code(theme, "print('hello')", "python", "Example", True)
-        
+
         assert code.code == "print('hello')"
         assert code.language == "python"
         assert code.title == "Example"
@@ -290,9 +286,9 @@ class TestCode:
         theme = Theme()
         console = MagicMock()
         code = Code(theme, "code", "python", "Title")
-        
+
         code.render(console)
-        
+
         # Should print title and code
         assert console.print.call_count == 2
 
@@ -301,9 +297,9 @@ class TestCode:
         theme = Theme()
         console = MagicMock()
         code = Code(theme, "code", "python")
-        
+
         code.render(console)
-        
+
         # Should only print code
         assert console.print.call_count == 1
 
@@ -312,9 +308,9 @@ class TestCode:
         theme = Theme()
         console = MagicMock()
         code = Code(theme, "line1\nline2\nline3", "python", line_numbers=False)
-        
+
         code.render(console)
-        
+
         # Check that padding is calculated for alignment
         assert console.print.call_count == 1
 
@@ -327,7 +323,7 @@ class TestSummary:
         theme = Theme()
         data = [{"label": "Name", "value": "Test"}]
         summary = Summary(theme, data)
-        
+
         assert summary.data == data
         assert summary.component_type == "summary"
 
@@ -340,9 +336,9 @@ class TestSummary:
             {"label": "Count", "value": 42}
         ]
         summary = Summary(theme, data)
-        
+
         summary.render(console)
-        
+
         assert console.print.call_count == 2
         calls = console.print.call_args_list
         assert "Name" in str(calls[0])
@@ -359,7 +355,7 @@ class TestBlock:
         theme = Theme()
         components = [Text(theme, "text", "info")]
         block = Block(theme, components)
-        
+
         assert block.components == components
         assert block.component_type == "block"
 
@@ -370,9 +366,9 @@ class TestBlock:
         text1 = MagicMock()
         text2 = MagicMock()
         block = Block(theme, [text1, text2])
-        
+
         block.render(console)
-        
+
         text1.render.assert_called_once_with(console)
         text2.render.assert_called_once_with(console)
 
@@ -384,9 +380,9 @@ class TestBlock:
         text.spacing_before = MagicMock(return_value=0)
         nested_block = Block(theme, [])
         block = Block(theme, [text, nested_block])
-        
+
         block.render(console)
-        
+
         # Should create temporary stream for nested blocks
         text.render.assert_called()
 
@@ -398,7 +394,7 @@ class TestSpinner:
         """Test Spinner initialization."""
         theme = Theme()
         spinner = Spinner(theme, "Loading...")
-        
+
         assert spinner.message == "Loading..."
         assert spinner.component_type == "spinner"
 
@@ -407,9 +403,9 @@ class TestSpinner:
         theme = Theme()
         console = MagicMock()
         spinner = Spinner(theme, "Processing")
-        
+
         spinner.render(console)
-        
+
         console.print.assert_called_once()
         args = console.print.call_args
         assert "Processing" in args[0][0]
@@ -423,7 +419,7 @@ class TestProgressBar:
         """Test ProgressBar initialization."""
         theme = Theme()
         progress = ProgressBar(theme, "Processing")
-        
+
         assert progress.description == "Processing"
         assert progress.component_type == "progress"
 
@@ -432,9 +428,9 @@ class TestProgressBar:
         theme = Theme()
         console = MagicMock()
         progress = ProgressBar(theme, "Loading")
-        
+
         progress.render(console)
-        
+
         console.print.assert_called_once()
         args = console.print.call_args
         assert "Loading" in args[0][0]
@@ -447,7 +443,7 @@ class TestPrompt:
         """Test Prompt initialization."""
         theme = Theme()
         prompt = Prompt(theme, "Enter value:", default="test")
-        
+
         assert prompt.text == "Enter value:"
         assert prompt.kwargs == {"default": "test"}
         assert prompt.component_type == "prompt"
@@ -457,9 +453,9 @@ class TestPrompt:
         theme = Theme()
         console = MagicMock()
         prompt = Prompt(theme, "Test")
-        
+
         prompt.render(console)
-        
+
         # Prompt render is a no-op (spacing only)
         console.print.assert_not_called()
 
@@ -471,7 +467,7 @@ class TestConfirm:
         """Test Confirm initialization."""
         theme = Theme()
         confirm = Confirm(theme, "Are you sure?", abort=True)
-        
+
         assert confirm.text == "Are you sure?"
         assert confirm.kwargs == {"abort": True}
         assert confirm.component_type == "confirm"
@@ -481,9 +477,9 @@ class TestConfirm:
         theme = Theme()
         console = MagicMock()
         confirm = Confirm(theme, "Test")
-        
+
         confirm.render(console)
-        
+
         # Confirm render is a no-op (spacing only)
         console.print.assert_not_called()
 
@@ -496,7 +492,7 @@ class TestList:
         theme = Theme()
         items = ["Item 1", "Item 2"]
         list_comp = List(theme, items)
-        
+
         assert list_comp.items == items
         assert list_comp.component_type == "list"
 
@@ -506,9 +502,9 @@ class TestList:
         console = MagicMock()
         items = ["First", "Second", "Third"]
         list_comp = List(theme, items)
-        
+
         list_comp.render(console)
-        
+
         assert console.print.call_count == 3
         calls = console.print.call_args_list
         for i, call in enumerate(calls):
@@ -521,9 +517,9 @@ class TestList:
         theme.indentation = ComponentIndentation(list=4)
         console = MagicMock()
         list_comp = List(theme, ["Item"])
-        
+
         list_comp.render(console)
-        
+
         args = console.print.call_args
         assert "    " in args[0][0]  # 4 spaces
 
@@ -535,7 +531,7 @@ class TestRenderStream:
         """Test RenderStream initialization."""
         console = MagicMock()
         stream = RenderStream(console)
-        
+
         assert stream.console is console
         assert stream.history == []
 
@@ -545,9 +541,9 @@ class TestRenderStream:
         stream = RenderStream(console)
         component = MagicMock()
         component.spacing_before.return_value = 0
-        
+
         stream.render(component)
-        
+
         component.spacing_before.assert_called_once_with(None)
         component.render.assert_called_once_with(console)
         assert stream.history == [component]
@@ -556,15 +552,15 @@ class TestRenderStream:
         """Test rendering with spacing."""
         console = MagicMock()
         stream = RenderStream(console)
-        
+
         comp1 = MagicMock()
         comp1.spacing_before.return_value = 0
         comp2 = MagicMock()
         comp2.spacing_before.return_value = 2
-        
+
         stream.render(comp1)
         stream.render(comp2)
-        
+
         # Should print 2 newlines for spacing
         calls = console.print.call_args_list
         assert len(calls) == 1
@@ -574,27 +570,27 @@ class TestRenderStream:
         """Test last_component property."""
         console = MagicMock()
         stream = RenderStream(console)
-        
+
         assert stream.last_component is None
-        
+
         comp = MagicMock()
         comp.spacing_before.return_value = 0
         stream.render(comp)
-        
+
         assert stream.last_component is comp
 
     def test_clear_history(self):
         """Test clear_history method."""
         console = MagicMock()
         stream = RenderStream(console)
-        
+
         comp = MagicMock()
         comp.spacing_before.return_value = 0
         stream.render(comp)
-        
+
         assert len(stream.history) == 1
-        
+
         stream.clear_history()
-        
+
         assert stream.history == []
         assert stream.last_component is None

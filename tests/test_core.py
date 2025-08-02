@@ -1,14 +1,12 @@
 """Unit tests for clicycle.core module."""
 
-from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 
-import pytest
 from rich.console import Console
 from rich.progress import Progress
 
 from clicycle.core import Clicycle
-from clicycle.render import Block, Header, Section, Spinner, Text
+from clicycle.render import Header, Section
 from clicycle.theme import ComponentIndentation, Theme
 
 
@@ -38,10 +36,10 @@ class TestClicycleCore:
         """Test header method."""
         mock_stream = MagicMock()
         mock_stream_class.return_value = mock_stream
-        
+
         cli = Clicycle()
         cli.stream = mock_stream
-        
+
         cli.header("Title", "Subtitle", "App")
         mock_stream.render.assert_called_once()
         args = mock_stream.render.call_args[0]
@@ -55,10 +53,10 @@ class TestClicycleCore:
         """Test header uses instance app_name when not provided."""
         mock_stream = MagicMock()
         mock_stream_class.return_value = mock_stream
-        
+
         cli = Clicycle(app_name="DefaultApp")
         cli.stream = mock_stream
-        
+
         cli.header("Title")
         args = mock_stream.render.call_args[0]
         assert args[0].app_name == "DefaultApp"
@@ -68,10 +66,10 @@ class TestClicycleCore:
         """Test section method."""
         mock_stream = MagicMock()
         mock_stream_class.return_value = mock_stream
-        
+
         cli = Clicycle()
         cli.stream = mock_stream
-        
+
         cli.section("Section Title")
         mock_stream.render.assert_called_once()
         args = mock_stream.render.call_args[0]
@@ -84,9 +82,9 @@ class TestClicycleCore:
         cli.console = MagicMock()
         cli.stream = MagicMock()
         cli.stream.last_component = None
-        
+
         cli.info("Test message")
-        
+
         # Check console.print was called with the message
         calls = cli.console.print.call_args_list
         assert len(calls) >= 1
@@ -101,13 +99,13 @@ class TestClicycleCore:
         mock_component = MagicMock()
         cli.stream.last_component = mock_component
         cli.stream.history = MagicMock()
-        
+
         # First call info to set up a component
         cli.info("First")
-        
+
         # Now the second call should add spacing
         cli.info("Second")
-        
+
         # Check that newlines were printed for spacing
         calls = cli.console.print.call_args_list
         # Should have spacing call and message call
@@ -119,9 +117,9 @@ class TestClicycleCore:
         cli.console = MagicMock()
         cli.stream = MagicMock()
         cli.stream.last_component = None
-        
+
         cli.success("Success!")
-        
+
         calls = cli.console.print.call_args_list
         assert len(calls) >= 1
         assert "Success!" in str(calls[-1])
@@ -132,9 +130,9 @@ class TestClicycleCore:
         cli.console = MagicMock()
         cli.stream = MagicMock()
         cli.stream.last_component = None
-        
+
         cli.error("Error!")
-        
+
         calls = cli.console.print.call_args_list
         assert len(calls) >= 1
         assert "Error!" in str(calls[-1])
@@ -145,9 +143,9 @@ class TestClicycleCore:
         cli.console = MagicMock()
         cli.stream = MagicMock()
         cli.stream.last_component = None
-        
+
         cli.warning("Warning!")
-        
+
         calls = cli.console.print.call_args_list
         assert len(calls) >= 1
         assert "Warning!" in str(calls[-1])
@@ -158,9 +156,9 @@ class TestClicycleCore:
         cli.console = MagicMock()
         cli.stream = MagicMock()
         cli.stream.last_component = None
-        
+
         cli.list_item("Item 1")
-        
+
         calls = cli.console.print.call_args_list
         assert len(calls) >= 1
         assert "Item 1" in str(calls[-1])
@@ -171,13 +169,13 @@ class TestClicycleCore:
         cli.console = MagicMock()
         cli.stream = MagicMock()
         cli.stream.history = MagicMock()
-        
+
         # First set up a previous component
         cli.info("Setup")
-        
+
         # Now call list_item which should add spacing
         cli.list_item("Item with spacing")
-        
+
         # Check calls
         calls = cli.console.print.call_args_list
         assert len(calls) >= 2
@@ -188,14 +186,14 @@ class TestClicycleCore:
         mock_ctx = MagicMock()
         mock_ctx.obj = {"verbose": True}
         mock_get_context.return_value = mock_ctx
-        
+
         cli = Clicycle()
         cli.console = MagicMock()
         cli.stream = MagicMock()
         cli.stream.last_component = None
-        
+
         cli.debug("Debug info")
-        
+
         calls = cli.console.print.call_args_list
         assert len(calls) >= 1
         assert "Debug info" in str(calls[-1])
@@ -206,18 +204,18 @@ class TestClicycleCore:
         mock_ctx = MagicMock()
         mock_ctx.obj = {"verbose": True}
         mock_get_context.return_value = mock_ctx
-        
+
         cli = Clicycle()
         cli.console = MagicMock()
         cli.stream = MagicMock()
         cli.stream.history = MagicMock()
-        
+
         # Set up previous component
         cli.info("Setup")
-        
+
         # Now debug should add spacing
         cli.debug("Debug with spacing")
-        
+
         calls = cli.console.print.call_args_list
         assert len(calls) >= 2
 
@@ -227,13 +225,13 @@ class TestClicycleCore:
         mock_ctx = MagicMock()
         mock_ctx.obj = {"verbose": False}
         mock_get_context.return_value = mock_ctx
-        
+
         cli = Clicycle()
         cli.console = MagicMock()
         cli.stream = MagicMock()
-        
+
         cli.debug("Debug info")
-        
+
         # Should not print anything
         cli.console.print.assert_not_called()
 
@@ -244,12 +242,12 @@ class TestClicycleCore:
         mock_stream = MagicMock()
         mock_stream_class.return_value = mock_stream
         mock_click_prompt.return_value = "user input"
-        
+
         cli = Clicycle()
         cli.stream = mock_stream
-        
+
         result = cli.prompt("Enter value:", default="test")
-        
+
         assert result == "user input"
         mock_click_prompt.assert_called_once_with("Enter value:", default="test")
         mock_stream.render.assert_called_once()
@@ -261,12 +259,12 @@ class TestClicycleCore:
         mock_stream = MagicMock()
         mock_stream_class.return_value = mock_stream
         mock_click_confirm.return_value = True
-        
+
         cli = Clicycle()
         cli.stream = mock_stream
-        
+
         result = cli.confirm("Are you sure?", abort=True)
-        
+
         assert result is True
         mock_click_confirm.assert_called_once_with("Are you sure?", abort=True)
         mock_stream.render.assert_called_once()
@@ -276,13 +274,13 @@ class TestClicycleCore:
         cli = Clicycle()
         original_stream = cli.stream
         original_console = cli.console
-        
+
         with cli.block() as block_cli:
             assert block_cli is cli
             # Inside the block, stream and console should be temporary
             assert cli.stream != original_stream
             assert cli.console != original_console
-        
+
         # After block, stream and console should be restored
         assert cli.stream is original_stream
         assert cli.console is original_console
@@ -292,9 +290,9 @@ class TestClicycleCore:
         cli = Clicycle()
         cli.console = MagicMock()
         cli.stream = MagicMock()
-        
+
         cli.clear()
-        
+
         cli.console.clear.assert_called_once()
         cli.stream.clear_history.assert_called_once()
 
@@ -303,9 +301,9 @@ class TestClicycleCore:
         cli = Clicycle()
         cli.section = MagicMock()
         cli.list_item = MagicMock()
-        
+
         cli.suggestions(["Option 1", "Option 2"])
-        
+
         cli.section.assert_called_once_with("Suggestions")
         assert cli.list_item.call_count == 2
 
@@ -314,13 +312,13 @@ class TestClicycleCore:
         """Test summary method."""
         mock_stream = MagicMock()
         mock_stream_class.return_value = mock_stream
-        
+
         cli = Clicycle()
         cli.stream = mock_stream
-        
+
         data = [{"label": "Name", "value": "Test"}]
         cli.summary(data)
-        
+
         mock_stream.render.assert_called_once()
 
     @patch("click.get_current_context")
@@ -329,13 +327,13 @@ class TestClicycleCore:
         mock_ctx = MagicMock()
         mock_ctx.obj = {"verbose": True}
         mock_get_context.return_value = mock_ctx
-        
+
         cli = Clicycle()
         cli.info = MagicMock()
-        
+
         with cli.spinner("Loading..."):
             pass
-        
+
         cli.info.assert_called_once_with("Loading...")
 
     def test_spinner_normal_mode(self):
@@ -344,13 +342,13 @@ class TestClicycleCore:
         cli.console = MagicMock()
         cli.stream = MagicMock()
         cli._progress = None
-        
+
         mock_status = MagicMock()
         cli.console.status.return_value = mock_status
-        
+
         with cli.spinner("Loading..."):
             pass
-        
+
         cli.console.status.assert_called_once()
         mock_status.__enter__.assert_called_once()
         mock_status.__exit__.assert_called_once()
@@ -360,10 +358,10 @@ class TestClicycleCore:
         cli = Clicycle()
         cli._progress = MagicMock()  # Simulate being inside progress
         cli.console = MagicMock()
-        
+
         with cli.spinner("Loading..."):
             pass
-        
+
         # Should not create status when inside progress
         cli.console.status.assert_not_called()
 
@@ -372,12 +370,12 @@ class TestClicycleCore:
         cli = Clicycle()
         cli.console = MagicMock()
         cli.stream = MagicMock()
-        
+
         with cli.progress("Processing") as p:
             assert p is cli
             assert cli._progress is not None
             assert cli._task_id is not None
-        
+
         assert cli._progress is None
         assert cli._task_id is None
 
@@ -386,7 +384,7 @@ class TestClicycleCore:
         cli = Clicycle()
         cli.console = MagicMock()
         cli.stream = MagicMock()
-        
+
         with cli.progress("Outer"):
             outer_progress = cli._progress
             with cli.progress("Inner") as inner:
@@ -399,7 +397,7 @@ class TestClicycleCore:
         cli = Clicycle()
         cli.console = MagicMock()
         cli.stream = MagicMock()
-        
+
         with cli.multi_progress("Processing") as p:
             assert isinstance(p, Progress)
 
@@ -408,13 +406,13 @@ class TestClicycleCore:
         """Test table method."""
         mock_stream = MagicMock()
         mock_stream_class.return_value = mock_stream
-        
+
         cli = Clicycle()
         cli.stream = mock_stream
-        
+
         data = [{"col1": "val1"}]
         cli.table(data, "Title")
-        
+
         mock_stream.render.assert_called_once()
 
     @patch("clicycle.core.RenderStream")
@@ -422,12 +420,12 @@ class TestClicycleCore:
         """Test code method."""
         mock_stream = MagicMock()
         mock_stream_class.return_value = mock_stream
-        
+
         cli = Clicycle()
         cli.stream = mock_stream
-        
+
         cli.code("print('hello')", "python", "Title", True)
-        
+
         mock_stream.render.assert_called_once()
 
     @patch("clicycle.core.RenderStream")
@@ -435,12 +433,12 @@ class TestClicycleCore:
         """Test json method."""
         mock_stream = MagicMock()
         mock_stream_class.return_value = mock_stream
-        
+
         cli = Clicycle()
         cli.stream = mock_stream
-        
+
         cli.json({"key": "value"}, "Title")
-        
+
         mock_stream.render.assert_called_once()
 
     @patch("click.get_current_context")
@@ -449,7 +447,7 @@ class TestClicycleCore:
         mock_ctx = MagicMock()
         mock_ctx.obj = {"verbose": True}
         mock_get_context.return_value = mock_ctx
-        
+
         cli = Clicycle()
         assert cli.is_verbose is True
 
@@ -459,7 +457,7 @@ class TestClicycleCore:
         mock_ctx = MagicMock()
         mock_ctx.obj = {"verbose": False}
         mock_get_context.return_value = mock_ctx
-        
+
         cli = Clicycle()
         assert cli.is_verbose is False
 
@@ -467,7 +465,7 @@ class TestClicycleCore:
     def test_is_verbose_no_context(self, mock_get_context):
         """Test is_verbose property when no context exists."""
         mock_get_context.side_effect = RuntimeError
-        
+
         cli = Clicycle()
         assert cli.is_verbose is False
 
@@ -476,9 +474,9 @@ class TestClicycleCore:
         cli = Clicycle()
         cli._progress = MagicMock()
         cli._task_id = 1
-        
+
         cli.update_progress(50.0, "Halfway")
-        
+
         cli._progress.update.assert_any_call(1, description="Halfway")
         cli._progress.update.assert_any_call(1, completed=50.0)
 
@@ -487,9 +485,9 @@ class TestClicycleCore:
         cli = Clicycle()
         cli._progress = MagicMock()
         cli._task_id = 1
-        
+
         cli.update_progress(75.0)
-        
+
         cli._progress.update.assert_called_once_with(1, completed=75.0)
 
     def test_update_progress_no_active(self):
@@ -497,7 +495,7 @@ class TestClicycleCore:
         cli = Clicycle()
         cli._progress = None
         cli._task_id = None
-        
+
         # Should not raise error
         cli.update_progress(50.0, "Test")
 
@@ -511,21 +509,21 @@ class TestClicycleCore:
             warning=3,
             list=6
         )
-        
+
         cli = Clicycle(theme=theme)
         cli.console = MagicMock()
         cli.stream = MagicMock()
         cli.stream.last_component = None
-        
+
         # Test each method
         cli.info("Info")
         cli.success("Success")
         cli.error("Error")
         cli.warning("Warning")
         cli.list_item("Item")
-        
+
         calls = cli.console.print.call_args_list
-        
+
         # Check that appropriate indentation was applied
         # Info should have 2 spaces
         assert "  " in str(calls[0]) and "Info" in str(calls[0])
