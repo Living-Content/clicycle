@@ -1,0 +1,83 @@
+"""Spinner component with lifecycle management."""
+
+from __future__ import annotations
+
+from types import TracebackType
+from typing import Literal
+
+from rich.console import Console
+from rich.live import Live
+from rich.spinner import Spinner as RichSpinner
+from rich.status import Status
+from rich.table import Table
+
+from clicycle.components.base import Component
+from clicycle.theme import Theme
+
+
+class Spinner(Component):
+    """Spinner component that manages its own lifecycle."""
+
+    component_type = "spinner"
+
+    def __init__(self, theme: Theme, message: str, console: Console):
+        super().__init__(theme)
+        self.message = message
+        self.console = console
+        self._context: Live | Status | None = None
+        # Mark as transient if using disappearing spinners
+        self.was_transient = theme.disappearing_spinners
+
+    def get_spacing_before(self) -> int:
+        """Get normal spacing - spinners should have normal spacing before them."""
+        return super().get_spacing_before()
+
+    def render(self, console: Console) -> None:
+        """Render method - spinners start when context manager is entered."""
+        # Don't start immediately, wait for context manager
+        pass
+
+    def __enter__(self) -> Spinner:
+        """Context manager entry - start the spinner."""
+        if self.theme.disappearing_spinners:
+            # Create a grid table for spinner + text
+            spinner = RichSpinner(
+                self.theme.spinner_type, style=self.theme.typography.info_style
+            )
+
+            # Use Live display with transient for clean disappearing
+            self._context = Live(
+                spinner,
+                console=self.console,
+                transient=True,
+                refresh_per_second=10,
+            )
+            # Update with actual content
+            self._context.__enter__()
+
+            # Create table with spinner and text
+            table = Table.grid(padding=(0, 1))
+            table.add_row(spinner, self.message)
+            self._context.update(table)
+        else:
+            # Use regular status for persistent spinners
+            self._context = self.console.status(
+                self.message,
+                spinner=self.theme.spinner_type,
+                spinner_style=self.theme.typography.info_style,
+            )
+            self._context.__enter__()
+
+        return self
+
+    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> Literal[False]:
+        """Context manager exit - stop the spinner."""
+        if self._context:
+            self._context.__exit__(exc_type, exc_val, exc_tb)
+
+            # For non-disappearing spinners, print the final message
+            if not self.theme.disappearing_spinners:
+                self.console.print(
+                    f"[{self.theme.typography.info_style}]{self.message}[/]"
+                )
+        return False

@@ -1,0 +1,52 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.0.0] - 2025-01-05
+
+### Added
+
+- Component-based architecture with automatic spacing management
+- Interactive components with arrow-key navigation (`select` and `multi_select`)
+- Disappearing spinners feature with `disappearing_spinners` theme option
+- Convenient module-level API (`import clicycle as cc`)
+- Debug component that respects Click's verbose mode
+- Comprehensive test suite with 96% coverage
+- Full type hints throughout the codebase
+- Python 3.11+ support
+
+### Changed
+
+- Complete architectural refactor from monolithic to component-based design
+- Moved from class-based to function-based API for better ergonomics
+- Components now self-manage spacing based on theme rules
+- Spinners now properly handle transient display when disappearing
+- Improved Rich integration with better theme customization
+- Updated minimum Python version from 3.10 to 3.11
+
+### Fixed
+
+- Double messaging issue with spinners
+- Spacing issues between components
+- Interactive menu display issues across different terminals
+- Test coverage gaps and import errors
+
+### Removed
+
+- Legacy monolithic `core.py` module
+- Old class-based API (though Clicycle class still available for advanced use)
+- Python 3.10 support
+
+## [1.0.0] - 2024-12-12
+
+### Added
+
+- Initial release
+- Basic CLI rendering with Rich styling
+- Header, section, and text components
+- Progress bars and spinners
+- Table and summary components
+- Theme system with customizable icons and colors
