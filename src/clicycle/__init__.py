@@ -6,6 +6,7 @@ import inspect
 import sys
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 from clicycle.clicycle import Clicycle
 from clicycle.theme import (
@@ -34,13 +35,13 @@ __all__ = [
 class _ModuleInterface(ModuleType):
     """Module wrapper that provides convenience API."""
 
-    def __init__(self, module):
+    def __init__(self, module: ModuleType) -> None:
         self.__dict__.update(module.__dict__)
         self._cli = Clicycle()
         self._component_cache = {}
         self._discover_components()
 
-    def _discover_components(self):
+    def _discover_components(self) -> None:
         """Discover all components in the components directory."""
         components_dir = Path(__file__).parent / "components"
 
@@ -60,7 +61,7 @@ class _ModuleInterface(ModuleType):
                     # Use component_type as the convenience name
                     self._component_cache[obj.component_type] = (module_name, name)
 
-    def __getattr__(self, name: str):
+    def __getattr__(self, name: str) -> Any:
         """Get attribute from module, component cache, or special handlers."""
         # Dispatch to handlers
         for handler in [
@@ -76,7 +77,7 @@ class _ModuleInterface(ModuleType):
 
         raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
-    def _handle_special_attribute(self, name, sentinel):
+    def _handle_special_attribute(self, name: str, sentinel: object) -> Any:
         """Handle special attributes like 'console', 'theme', etc."""
         if name == "console":
             return self._cli.console
@@ -92,7 +93,7 @@ class _ModuleInterface(ModuleType):
             return self._cli.clear
         return sentinel
 
-    def _handle_cached_component(self, name, sentinel):
+    def _handle_cached_component(self, name: str, sentinel: object) -> Any:
         """Handle components that are in the cache."""
         if name not in self._component_cache:
             return sentinel
@@ -122,7 +123,7 @@ class _ModuleInterface(ModuleType):
         setattr(self, name, wrapper)
         return wrapper
 
-    def _handle_special_function(self, name, sentinel):
+    def _handle_special_function(self, name: str, sentinel: object) -> Any:
         """Handle special functions that are not auto-discovered."""
         if name == "json":
             from clicycle.components.code import json_code

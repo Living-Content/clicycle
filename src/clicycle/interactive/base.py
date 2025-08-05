@@ -6,13 +6,16 @@ import sys
 import termios
 import tty
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from clicycle import Clicycle
 
 
 class _BaseRenderer(ABC):
     """Base class for interactive renderers that use raw terminal IO."""
 
-    def __init__(self, title: str, options: list[str | dict[str, Any]], cli):
+    def __init__(self, title: str, options: list[str | dict[str, Any]], cli: "Clicycle") -> None:
         self.title = title
         self.options = self._normalize_options(options)
         self.cli = cli
@@ -50,11 +53,11 @@ class _BaseRenderer(ABC):
         return ""
 
     @abstractmethod
-    def _setup_terminal(self):
+    def _setup_terminal(self) -> None:
         """Draw the initial menu and configure terminal."""
         raise NotImplementedError
 
-    def _teardown_terminal(self, fd, old_settings):
+    def _teardown_terminal(self, fd: int, old_settings: Any) -> None:
         """Restore terminal to its original state."""
         if self.cursor_line > 0:
             sys.stdout.write(f"\033[{self.cursor_line}A")
@@ -70,7 +73,7 @@ class _BaseRenderer(ABC):
         self.cli.console.show_cursor(True)
 
     @abstractmethod
-    def _main_loop(self):
+    def _main_loop(self) -> None:
         """Handle user input and update display."""
         raise NotImplementedError
 
