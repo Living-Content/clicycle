@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Living-Content/clicycle/actions/workflows/ci.yml/badge.svg)](https://github.com/Living-Content/clicycle/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/Living-Content/clicycle/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/Living-Content/clicycle)
-[![PyPI version](https://badge.fury.io/py/clicycle.svg)](https://badge.fury.io/py/clicycle)
+[![PyPI version](https://img.shields.io/pypi/v/clicycle)](https://pypi.org/project/clicycle/)
 [![Python Versions](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)](https://pypi.org/project/clicycle/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
