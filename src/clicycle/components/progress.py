@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from contextlib import contextmanager
+from types import TracebackType
+from typing import Literal
 
 from rich.console import Console
 from rich.progress import (
@@ -39,7 +42,7 @@ class ProgressBar(Component):
         )
 
     @contextmanager
-    def track(self):
+    def track(self) -> Generator[ProgressBar, None, None]:
         """Context manager for progress tracking."""
         self._progress = Progress(
             BarColumn(),
@@ -66,11 +69,11 @@ class ProgressBar(Component):
                 self._progress.update(self._task_id, description=message)
             self._progress.update(self._task_id, completed=percent)
 
-    def __enter__(self):
+    def __enter__(self) -> ProgressBar:
         """Enter context manager."""
         return self.track().__enter__()
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> Literal[False]:
         """Exit context manager."""
         if self._progress:
             self._progress.__exit__(exc_type, exc_val, exc_tb)

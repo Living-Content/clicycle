@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+from types import TracebackType
+from typing import Literal
+
 from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner as RichSpinner
+from rich.status import Status
 from rich.table import Table
 
 from clicycle.components.base import Component
@@ -20,7 +24,7 @@ class Spinner(Component):
         super().__init__(theme)
         self.message = message
         self.console = console
-        self._context = None
+        self._context: Live | Status | None = None
         # Mark as transient if using disappearing spinners
         self.was_transient = theme.disappearing_spinners
 
@@ -33,7 +37,7 @@ class Spinner(Component):
         # Don't start immediately, wait for context manager
         pass
 
-    def __enter__(self):
+    def __enter__(self) -> Spinner:
         """Context manager entry - start the spinner."""
         if self.theme.disappearing_spinners:
             # Create a grid table for spinner + text
@@ -66,7 +70,7 @@ class Spinner(Component):
 
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> Literal[False]:
         """Context manager exit - stop the spinner."""
         if self._context:
             self._context.__exit__(exc_type, exc_val, exc_tb)

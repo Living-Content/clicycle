@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import sys
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from clicycle.interactive.base import _BaseRenderer
+
+if TYPE_CHECKING:
+    from clicycle import Clicycle
 
 
 class _MultiSelectRenderer(_BaseRenderer):
@@ -18,17 +21,17 @@ class _MultiSelectRenderer(_BaseRenderer):
         default_selected: list[int] | None,
         min_selection: int,
         max_selection: int | None,
-        cli,
-    ):
+        cli: Clicycle,
+    ) -> None:
         super().__init__(title, options, cli)
         self.selected_indices = set(default_selected or [])
         self.min_selection = min_selection
         self.max_selection = max_selection
-        self.option_lines = []
-        self.selected_values = None
+        self.option_lines: list[int] = []
+        self.selected_values: list[Any] | None = None
         self.total_lines = len(self.options) + 1
 
-    def _draw_line(self, index: int, is_current: bool):
+    def _draw_line(self, index: int, is_current: bool) -> None:
         """Draw a single line (option or submit button)."""
         sys.stdout.write("\r\033[2K")
         if index < len(self.options):
@@ -47,7 +50,7 @@ class _MultiSelectRenderer(_BaseRenderer):
         else:
             sys.stdout.write(f"  {line}")
 
-    def _update_display(self, old_index: int):
+    def _update_display(self, old_index: int) -> None:
         """Update the display after a change."""
         self._move_cursor_to_line(old_index)
         self._draw_line(old_index, False)
@@ -55,7 +58,7 @@ class _MultiSelectRenderer(_BaseRenderer):
         self._draw_line(self.current_index, True)
         sys.stdout.flush()
 
-    def _toggle_selection(self):
+    def _toggle_selection(self) -> None:
         """Toggle selection for the current item."""
         if self.current_index in self.selected_indices:
             self.selected_indices.remove(self.current_index)
@@ -67,7 +70,7 @@ class _MultiSelectRenderer(_BaseRenderer):
         self._draw_line(self.current_index, True)
         sys.stdout.flush()
 
-    def _setup_terminal(self):
+    def _setup_terminal(self) -> None:
         """Draw the initial menu and configure terminal."""
         if self.title:
             self.cli.console.print(f"\n{self.title}")
@@ -80,7 +83,7 @@ class _MultiSelectRenderer(_BaseRenderer):
         sys.stdout.flush()
         self.cursor_line = len(self.options) + 1
 
-    def _move_cursor_to_line(self, target_index):
+    def _move_cursor_to_line(self, target_index: int) -> None:
         target_line = self.option_lines[target_index]
         move = self.cursor_line - target_line
         if move > 0:
@@ -89,7 +92,7 @@ class _MultiSelectRenderer(_BaseRenderer):
             sys.stdout.write(f"\033[{-move}B")
         self.cursor_line = target_line
 
-    def _main_loop(self):
+    def _main_loop(self) -> None:
         """Handle user input and update display."""
         while True:
             key = self._get_key()
@@ -124,9 +127,13 @@ def interactive_multi_select(
     max_selection: int | None = None,
 ) -> list[Any] | None:
     """Show an interactive multi-select menu with checkboxes."""
-    import clicycle
-
-    cli = clicycle._cli
+    import sys
+    clicycle_module = sys.modules.get('clicycle')
+    if clicycle_module is None:
+        raise RuntimeError("clicycle module not imported")
+    cli = getattr(clicycle_module, '_cli', None)
+    if cli is None:
+        raise RuntimeError("clicycle._cli not initialized")
     renderer = _MultiSelectRenderer(
         title,
         options,
@@ -135,4 +142,5 @@ def interactive_multi_select(
         max_selection,
         cli,
     )
-    return renderer.render()
+    result = renderer.render()
+    return result if isinstance(result, list) else None

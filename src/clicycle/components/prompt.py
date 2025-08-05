@@ -17,7 +17,7 @@ class Prompt(Component):
 
     component_type = "prompt"
 
-    def __init__(self, theme: Theme, text: str, console: Console, **kwargs):
+    def __init__(self, theme: Theme, text: str, console: Console, **kwargs: Any) -> None:
         super().__init__(theme)
         self.text = text
         self.console = console
@@ -39,7 +39,7 @@ class Confirm(Component):
 
     component_type = "confirm"
 
-    def __init__(self, theme: Theme, text: str, console: Console, **kwargs):
+    def __init__(self, theme: Theme, text: str, console: Console, **kwargs: Any) -> None:
         super().__init__(theme)
         self.text = text
         self.console = console
@@ -95,11 +95,11 @@ class SelectList(Component):
         choice = RichPrompt.ask(
             f"{self.theme.icons.info} {prompt_text}",
             console=self.console,
-            default=default_index,
+            default=str(default_index) if default_index else None,
         )
 
         try:
-            choice_num = int(choice)
+            choice_num = int(choice) if choice is not None else 0
             if not 1 <= choice_num <= len(self.options):
                 raise ValueError()
             return str(self.options[choice_num - 1])

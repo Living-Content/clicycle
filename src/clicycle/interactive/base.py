@@ -6,7 +6,7 @@ import sys
 import termios
 import tty
 from abc import ABC, abstractmethod
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from clicycle import Clicycle
@@ -15,12 +15,12 @@ if TYPE_CHECKING:
 class _BaseRenderer(ABC):
     """Base class for interactive renderers that use raw terminal IO."""
 
-    def __init__(self, title: str, options: list[str | dict[str, Any]], cli: "Clicycle") -> None:
+    def __init__(self, title: str, options: list[str | dict[str, Any]], cli: Clicycle) -> None:
         self.title = title
         self.options = self._normalize_options(options)
         self.cli = cli
         self.current_index = 0
-        self.selected_value = None
+        self.selected_value: Any = None
         self.cursor_line = 0
         self.total_lines = 0
 

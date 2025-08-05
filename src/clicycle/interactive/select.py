@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import sys
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from clicycle.interactive.base import _BaseRenderer
+
+if TYPE_CHECKING:
+    from clicycle import Clicycle
 
 
 class _SelectRenderer(_BaseRenderer):
@@ -16,11 +19,11 @@ class _SelectRenderer(_BaseRenderer):
         title: str,
         options: list[str | dict[str, Any]],
         default_index: int,
-        cli,
-    ):
+        cli: Clicycle,
+    ) -> None:
         super().__init__(title, options, cli)
         self.current_index = default_index
-        self.option_lines = []
+        self.option_lines: list[int] = []
         self.total_lines = len(self.options)
 
     def _format_label(self, opt: dict[str, Any]) -> str:
@@ -30,9 +33,9 @@ class _SelectRenderer(_BaseRenderer):
             return "Back ←"
         if label == "Exit":
             return f"Exit {self.cli.theme.icons.error}"
-        return label
+        return str(label)
 
-    def _setup_terminal(self):
+    def _setup_terminal(self) -> None:
         """Draw the initial menu and configure terminal."""
         if self.title:
             self.cli.console.print(f"\n{self.title}")
@@ -49,7 +52,7 @@ class _SelectRenderer(_BaseRenderer):
         self.cursor_line = len(self.options)
         self.option_lines = list(range(len(self.options)))
 
-    def _update_display(self, old_index: int):
+    def _update_display(self, old_index: int) -> None:
         """Update the display after a selection change."""
         old_line_pos = self.option_lines[old_index]
         move = self.cursor_line - old_line_pos
@@ -75,7 +78,7 @@ class _SelectRenderer(_BaseRenderer):
 
         sys.stdout.flush()
 
-    def _main_loop(self):
+    def _main_loop(self) -> None:
         """Handle user input and update display."""
         while True:
             key = self._get_key()
@@ -104,8 +107,12 @@ def interactive_select(
     default_index: int = 0,
 ) -> Any:
     """Show an interactive select menu with arrow key navigation."""
-    import clicycle
-
-    cli = clicycle._cli
+    import sys
+    clicycle_module = sys.modules.get('clicycle')
+    if clicycle_module is None:
+        raise RuntimeError("clicycle module not imported")
+    cli = getattr(clicycle_module, '_cli', None)
+    if cli is None:
+        raise RuntimeError("clicycle._cli not initialized")
     renderer = _SelectRenderer(title, options, default_index, cli)
     return renderer.render()

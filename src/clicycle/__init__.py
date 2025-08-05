@@ -38,7 +38,7 @@ class _ModuleInterface(ModuleType):
     def __init__(self, module: ModuleType) -> None:
         self.__dict__.update(module.__dict__)
         self._cli = Clicycle()
-        self._component_cache = {}
+        self._component_cache: dict[str, tuple[str, str]] = {}
         self._discover_components()
 
     def _discover_components(self) -> None:
@@ -85,7 +85,7 @@ class _ModuleInterface(ModuleType):
             return self._cli.theme
         if name == "configure":
 
-            def configure(**kwargs):
+            def configure(**kwargs: Any) -> None:
                 self._cli = Clicycle(**kwargs)
 
             return configure
@@ -105,16 +105,17 @@ class _ModuleInterface(ModuleType):
         # Create wrapper function based on component type
         if hasattr(component_class, "__enter__"):
             # Context managers need console
-            def wrapper(message: str):
+            def context_wrapper(message: str) -> Any:
                 obj = component_class(self._cli.theme, message, self._cli.console)
                 self._cli.stream.render(obj)
                 return obj
-
+            wrapper = context_wrapper
         else:
             # Regular components
-            def wrapper(*args, **kwargs):
+            def regular_wrapper(*args: Any, **kwargs: Any) -> None:
                 obj = component_class(self._cli.theme, *args, **kwargs)
                 self._cli.stream.render(obj)
+            wrapper = regular_wrapper
 
         wrapper.__name__ = name
         wrapper.__doc__ = f"Display {name.replace('_', ' ')}."
@@ -128,7 +129,7 @@ class _ModuleInterface(ModuleType):
         if name == "json":
             from clicycle.components.code import json_code
 
-            def json_wrapper(data, title=None):
+            def json_wrapper(data: Any, title: str | None = None) -> None:
                 self._cli.stream.render(json_code(self._cli.theme, data, title))
 
             setattr(self, name, json_wrapper)
