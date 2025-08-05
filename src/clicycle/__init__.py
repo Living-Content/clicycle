@@ -1,11 +1,14 @@
-from collections.abc import Iterator
-from contextlib import contextmanager
-from typing import Any
+"""Clicycle - Component-based CLI rendering with automatic spacing."""
 
-from .core import Clicycle
-from .instance import configure, get_default_cli
-from .prompts import select_from_list
-from .theme import (
+from __future__ import annotations
+
+import inspect
+import sys
+from pathlib import Path
+from types import ModuleType
+
+from clicycle.clicycle import Clicycle
+from clicycle.theme import (
     ComponentIndentation,
     ComponentSpacing,
     Icons,
@@ -14,132 +17,9 @@ from .theme import (
     Typography,
 )
 
-__version__ = "1.1.2"
+__version__ = "2.0.0"
 
-
-def header(
-    title: str, subtitle: str | None = None, app_name: str | None = None
-) -> None:
-    """Render header component."""
-    get_default_cli().header(title, subtitle, app_name)
-
-
-def section(title: str) -> None:
-    """Render section component."""
-    get_default_cli().section(title)
-
-
-def info(message: str) -> None:
-    """Render info message."""
-    get_default_cli().info(message)
-
-
-def success(message: str) -> None:
-    """Render success message."""
-    get_default_cli().success(message)
-
-
-def error(message: str) -> None:
-    """Render error message."""
-    get_default_cli().error(message)
-
-
-def warning(message: str) -> None:
-    """Render warning message."""
-    get_default_cli().warning(message)
-
-
-def debug(message: str) -> None:
-    """Render debug message."""
-    get_default_cli().debug(message)
-
-
-def prompt(text: str, **kwargs: Any) -> Any:
-    """Render a prompt with proper spacing."""
-    return get_default_cli().prompt(text, **kwargs)
-
-
-def confirm(text: str, **kwargs: Any) -> Any:
-    """Render a confirm with proper spacing."""
-    return get_default_cli().confirm(text, **kwargs)
-
-
-def summary(data: list[dict[str, str | int | float | bool | None]]) -> None:
-    """Render summary component."""
-    get_default_cli().summary(data)
-
-
-def list_item(item: str) -> None:
-    """Render list text with bullet point."""
-    get_default_cli().list_item(item)
-
-
-@contextmanager
-def spinner(message: str) -> Iterator[None]:
-    """Context manager for spinner."""
-    with get_default_cli().spinner(message) as s:
-        yield s
-
-
-def table(
-    data: list[dict[str, str | int | float | bool | None]],
-    title: str | None = None,
-) -> None:
-    """Render table component."""
-    get_default_cli().table(data, title)
-
-
-def code(
-    code_str: str,
-    language: str = "python",
-    title: str | None = None,
-    line_numbers: bool = True,
-) -> None:
-    """Render code component."""
-    get_default_cli().code(code_str, language, title, line_numbers)
-
-
-def json(data: dict[str, Any], title: str | None = None) -> None:
-    """Render JSON as code."""
-    get_default_cli().json(data, title)
-
-
-@contextmanager
-def progress(description: str = "Processing") -> Iterator[Clicycle]:
-    """Context manager for progress tracking."""
-    with get_default_cli().progress(description) as p:
-        yield p
-
-
-@contextmanager
-def multi_progress(description: str = "Processing") -> Iterator[Any]:
-    """Context manager for multi-task progress tracking."""
-    with get_default_cli().multi_progress(description) as p:
-        yield p
-
-
-def update_progress(percent: float, message: str | None = None) -> None:
-    """Update progress bar."""
-    get_default_cli().update_progress(percent, message)
-
-
-def suggestions(suggestions: list[str]) -> None:
-    """Render suggestions list."""
-    get_default_cli().suggestions(suggestions)
-
-
-@contextmanager
-def block() -> Iterator[Clicycle]:
-    """Context manager for grouped content."""
-    with get_default_cli().block() as b:
-        yield b
-
-
-def clear() -> None:
-    """Clear terminal and reset context."""
-    get_default_cli().clear()
-
-
+# Core exports
 __all__ = [
     "Clicycle",
     "Theme",
@@ -148,27 +28,126 @@ __all__ = [
     "Layout",
     "ComponentSpacing",
     "ComponentIndentation",
-    "select_from_list",
-    "configure",
-    "header",
-    "section",
-    "info",
-    "success",
-    "error",
-    "warning",
-    "debug",
-    "prompt",
-    "confirm",
-    "summary",
-    "list_item",
-    "spinner",
-    "table",
-    "code",
-    "json",
-    "progress",
-    "multi_progress",
-    "update_progress",
-    "suggestions",
-    "block",
-    "clear",
 ]
+
+
+class _ModuleInterface(ModuleType):
+    """Module wrapper that provides convenience API."""
+
+    def __init__(self, module):
+        self.__dict__.update(module.__dict__)
+        self._cli = Clicycle()
+        self._component_cache = {}
+        self._discover_components()
+
+    def _discover_components(self):
+        """Discover all components in the components directory."""
+        components_dir = Path(__file__).parent / "components"
+
+        for py_file in components_dir.glob("*.py"):
+            if py_file.name.startswith("_") or py_file.name == "base.py":
+                continue
+
+            module_name = f"clicycle.components.{py_file.stem}"
+            module = __import__(module_name, fromlist=["*"])
+
+            # Find all classes that inherit from Component
+            for name, obj in inspect.getmembers(module, inspect.isclass):
+                if hasattr(obj, "component_type") and obj.__module__ == module_name:
+                    # Skip interactive components that need ask()
+                    if hasattr(obj, "ask"):
+                        continue
+                    # Use component_type as the convenience name
+                    self._component_cache[obj.component_type] = (module_name, name)
+
+    def __getattr__(self, name: str):
+        """Get attribute from module, component cache, or special handlers."""
+        # Dispatch to handlers
+        for handler in [
+            self._handle_special_attribute,
+            self._handle_cached_component,
+            self._handle_special_function,
+        ]:
+            # The sentinel is used to distinguish from a handler returning None
+            sentinel = object()
+            result = handler(name, sentinel)
+            if result is not sentinel:
+                return result
+
+        raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+
+    def _handle_special_attribute(self, name, sentinel):
+        """Handle special attributes like 'console', 'theme', etc."""
+        if name == "console":
+            return self._cli.console
+        if name == "theme":
+            return self._cli.theme
+        if name == "configure":
+
+            def configure(**kwargs):
+                self._cli = Clicycle(**kwargs)
+
+            return configure
+        if name == "clear":
+            return self._cli.clear
+        return sentinel
+
+    def _handle_cached_component(self, name, sentinel):
+        """Handle components that are in the cache."""
+        if name not in self._component_cache:
+            return sentinel
+
+        module_name, class_name = self._component_cache[name]
+        module = __import__(module_name, fromlist=[class_name])
+        component_class = getattr(module, class_name)
+
+        # Create wrapper function based on component type
+        if hasattr(component_class, "__enter__"):
+            # Context managers need console
+            def wrapper(message: str):
+                obj = component_class(self._cli.theme, message, self._cli.console)
+                self._cli.stream.render(obj)
+                return obj
+
+        else:
+            # Regular components
+            def wrapper(*args, **kwargs):
+                obj = component_class(self._cli.theme, *args, **kwargs)
+                self._cli.stream.render(obj)
+
+        wrapper.__name__ = name
+        wrapper.__doc__ = f"Display {name.replace('_', ' ')}."
+
+        # Cache and return
+        setattr(self, name, wrapper)
+        return wrapper
+
+    def _handle_special_function(self, name, sentinel):
+        """Handle special functions that are not auto-discovered."""
+        if name == "json":
+            from clicycle.components.code import json_code
+
+            def json_wrapper(data, title=None):
+                self._cli.stream.render(json_code(self._cli.theme, data, title))
+
+            setattr(self, name, json_wrapper)
+            return json_wrapper
+
+        # Interactive components
+        if name == "select":
+            from clicycle.interactive.select import interactive_select
+
+            setattr(self, name, interactive_select)
+            return interactive_select
+
+        if name == "multi_select":
+            from clicycle.interactive.multi_select import interactive_multi_select
+
+            setattr(self, name, interactive_multi_select)
+            return interactive_multi_select
+
+        return sentinel
+
+
+# Replace this module with our wrapper
+sys.modules[__name__] = _ModuleInterface(sys.modules[__name__])

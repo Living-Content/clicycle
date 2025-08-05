@@ -98,15 +98,15 @@ class ComponentSpacing:
     debug: dict[str, int] = field(default_factory=lambda: {"debug": 0})
     code: dict[str, int] = field(
         default_factory=lambda: {
-            "info": 0,  # code after info has no spacing
-            "code": 0,  # code after code has no spacing
+            "info": 0,
+            "code": 0,
         }
     )
-    list: dict[str, int] = field(
+    list_item: dict[str, int] = field(
         default_factory=lambda: {
-            "info": 0,  # list after info has no spacing
-            "debug": 0,  # list after debug has no spacing
-            "list": 0,  # list after list has no spacing
+            "info": 0,
+            "debug": 0,
+            "list_item": 0,
         }
     )
 
@@ -120,7 +120,7 @@ class ComponentIndentation:
     error: int = 0
     warning: int = 0
     debug: int = 0
-    list: int = 2  # list_item defaults to two spaces
+    list_item: int = 2  # list_item defaults to two spaces
 
 
 @dataclass
@@ -136,6 +136,12 @@ class Theme:
     # Layout basics
     width: int = 100
     indent: str = "  "
+
+    # Spinner behavior
+    disappearing_spinners: bool = False
+    spinner_type: str = (
+        "dots"  # Rich spinner types: dots, dots2, dots3, line, bouncingBar, etc.
+    )
 
     # Performance optimization: cached formatted styles
     _style_cache: dict[str, str] = field(default_factory=dict, init=False, repr=False)

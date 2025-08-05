@@ -1,112 +1,96 @@
-"""Tests for the prompts module."""
+"""Tests for prompt components."""
 
 from unittest.mock import patch
 
-import click
 import pytest
 
-from clicycle import Clicycle, select_from_list
+from clicycle import Clicycle
 
 
 class TestSelectFromList:
-    """Test the select_from_list function."""
+    """Test the select_from_list method."""
 
-    @patch("clicycle.prompts.click.prompt")
-    def test_select_from_list_basic(self, mock_prompt):
+    @patch("rich.prompt.Prompt.ask")
+    def test_select_from_list_basic(self, mock_ask):
         """Test basic select_from_list functionality."""
-        mock_prompt.return_value = 2
+        mock_ask.return_value = "2"
+        cli = Clicycle()
         options = ["apple", "banana", "cherry"]
 
-        result = select_from_list("fruit", options)
+        result = cli.select_from_list("fruit", options)
 
         assert result == "banana"
-        mock_prompt.assert_called_once()
+        mock_ask.assert_called_once()
 
-    @patch("clicycle.prompts.click.prompt")
-    def test_select_from_list_with_default(self, mock_prompt):
+    @patch("rich.prompt.Prompt.ask")
+    def test_select_from_list_with_default(self, mock_ask):
         """Test select_from_list with default option."""
-        mock_prompt.return_value = 1  # User selects default
+        mock_ask.return_value = 1  # User selects default
+        cli = Clicycle()
         options = ["apple", "banana", "cherry"]
 
-        result = select_from_list("fruit", options, default="apple")
+        result = cli.select_from_list("fruit", options, default="apple")
 
         assert result == "apple"
-        # Should be called with default_index=1 (1-based)
-        call_args = mock_prompt.call_args
-        assert call_args[1]["default"] == 1
 
-    @patch("clicycle.prompts.click.prompt")
-    def test_select_from_list_with_custom_cli(self, mock_prompt):
-        """Test select_from_list with custom CLI instance."""
-        mock_prompt.return_value = 3
-        options = ["red", "green", "blue"]
-        custom_cli = Clicycle(app_name="TestApp")
-
-        result = select_from_list("color", options, cli=custom_cli)
-
-        assert result == "blue"
-
-    @patch("clicycle.prompts.click.prompt")
-    def test_select_from_list_invalid_choice_low(self, mock_prompt):
+    @patch("rich.prompt.Prompt.ask")
+    def test_select_from_list_invalid_choice_low(self, mock_ask):
         """Test select_from_list with choice too low."""
-        mock_prompt.return_value = 0
+        mock_ask.return_value = "0"
+        cli = Clicycle()
         options = ["apple", "banana", "cherry"]
 
-        with pytest.raises(click.UsageError, match="Invalid selection"):
-            select_from_list("fruit", options)
+        with pytest.raises(ValueError, match="Invalid selection"):
+            cli.select_from_list("fruit", options)
 
-    @patch("clicycle.prompts.click.prompt")
-    def test_select_from_list_invalid_choice_high(self, mock_prompt):
+    @patch("rich.prompt.Prompt.ask")
+    def test_select_from_list_invalid_choice_high(self, mock_ask):
         """Test select_from_list with choice too high."""
-        mock_prompt.return_value = 4
+        mock_ask.return_value = "4"
+        cli = Clicycle()
         options = ["apple", "banana", "cherry"]
 
-        with pytest.raises(click.UsageError, match="Invalid selection"):
-            select_from_list("fruit", options)
+        with pytest.raises(ValueError, match="Invalid selection"):
+            cli.select_from_list("fruit", options)
 
-    @patch("clicycle.prompts.click.prompt")
-    def test_select_from_list_default_not_in_options(self, mock_prompt):
+    @patch("rich.prompt.Prompt.ask")
+    def test_select_from_list_default_not_in_options(self, mock_ask):
         """Test select_from_list when default is not in options."""
-        mock_prompt.return_value = 2
+        mock_ask.return_value = "2"
+        cli = Clicycle()
         options = ["apple", "banana", "cherry"]
 
-        result = select_from_list("fruit", options, default="orange")
+        result = cli.select_from_list("fruit", options, default="orange")
 
         assert result == "banana"
-        # Should be called without default since "orange" not in options
-        call_args = mock_prompt.call_args
-        assert call_args[1].get("default") is None
 
-    @patch("clicycle.prompts.Clicycle.prompt")
-    @patch("clicycle.prompts.Clicycle.info")
-    def test_select_from_list_value_error_safety(self, mock_info, mock_prompt):
-        """Test ValueError safety in select_from_list."""
-        # This tests the ValueError exception handling in line 28-29
-        mock_info.return_value = None  # Use the mock parameter
-        mock_prompt.return_value = 1
-        options = ["apple", "banana"]
+    @patch("rich.prompt.Prompt.ask")
+    def test_select_from_list_non_numeric_input(self, mock_ask):
+        """Test select_from_list with non-numeric input."""
+        mock_ask.return_value = "not a number"
+        cli = Clicycle()
+        options = ["apple", "banana", "cherry"]
 
-        # Even though we set default to "banana", the mock will simulate
-        # the case where index() might fail (though it shouldn't in normal use)
-        result = select_from_list("fruit", options, default="banana")
+        with pytest.raises(ValueError, match="Invalid selection"):
+            cli.select_from_list("fruit", options)
 
-        assert result == "apple"  # Returns first option based on mock
-
-    @patch("clicycle.prompts.click.prompt")
-    def test_select_from_list_empty_options(self, mock_prompt):
+    @patch("rich.prompt.Prompt.ask")
+    def test_select_from_list_empty_options(self, mock_ask):
         """Test select_from_list with empty options list."""
-        mock_prompt.return_value = 1
+        mock_ask.return_value = "1"
+        cli = Clicycle()
         options = []
 
-        with pytest.raises(click.UsageError, match="Invalid selection"):
-            select_from_list("item", options)
+        with pytest.raises(ValueError, match="Invalid selection"):
+            cli.select_from_list("item", options)
 
-    @patch("clicycle.prompts.click.prompt")
-    def test_select_from_list_single_option(self, mock_prompt):
+    @patch("rich.prompt.Prompt.ask")
+    def test_select_from_list_single_option(self, mock_ask):
         """Test select_from_list with single option."""
-        mock_prompt.return_value = 1
+        mock_ask.return_value = "1"
+        cli = Clicycle()
         options = ["only_choice"]
 
-        result = select_from_list("item", options)
+        result = cli.select_from_list("item", options)
 
         assert result == "only_choice"

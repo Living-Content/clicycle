@@ -2,7 +2,8 @@
 
 from rich import box as rich_box
 
-from clicycle import ComponentSpacing, Icons, Layout, Theme, Typography
+from clicycle import Theme
+from clicycle.theme import ComponentSpacing, Icons, Layout, Typography
 
 
 class TestIcons:
