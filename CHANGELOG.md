@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2025-01-05
 
 ### Added
+
 - Component-based architecture with automatic spacing management
 - Interactive components with arrow-key navigation (`select` and `multi_select`)
 - Disappearing spinners feature with `disappearing_spinners` theme option
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Python 3.11+ support
 
 ### Changed
+
 - Complete architectural refactor from monolithic to component-based design
 - Moved from class-based to function-based API for better ergonomics
 - Components now self-manage spacing based on theme rules
@@ -26,12 +28,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated minimum Python version from 3.10 to 3.11
 
 ### Fixed
+
 - Double messaging issue with spinners
 - Spacing issues between components
 - Interactive menu display issues across different terminals
 - Test coverage gaps and import errors
 
 ### Removed
+
 - Legacy monolithic `core.py` module
 - Old class-based API (though Clicycle class still available for advanced use)
 - Python 3.10 support
@@ -39,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2024-12-12
 
 ### Added
+
 - Initial release
 - Basic CLI rendering with Rich styling
 - Header, section, and text components
