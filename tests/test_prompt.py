@@ -165,7 +165,7 @@ class TestSelectList:
         mock_rich_prompt.ask.assert_called_once_with(
             f"{theme.icons.info} Select a color (default: 3)",
             console=console,
-            default=3
+            default='3'
         )
 
     @patch('clicycle.components.prompt.RichPrompt')
