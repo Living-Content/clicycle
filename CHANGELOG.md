@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2025-01-05
+
+### Fixed
+
+- Added comprehensive type annotations for mypy strict mode compliance
+- Fixed type compatibility issues in prompt and interactive components
+- Updated all `__exit__` methods to use `Literal[False]` return type
+- Fixed module import approach in interactive components to avoid attribute errors
+- Ensured all components pass mypy strict mode checks
+
+### Changed
+
+- Updated test assertions to match new type annotation behavior
+
 ## [2.0.0] - 2025-01-05
 
 ### Added
