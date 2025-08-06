@@ -71,8 +71,8 @@ with cc.spinner("Processing batch job..."):
 
 cc.success("Batch job completed!")
 
-# Show the difference with a summary
-cc.section("Summary")
+# Show the results
+cc.section("Results")
 cc.info("Disappearing spinners are great for:")
 cc.list_item("Keeping output clean and focused")
 cc.list_item("Temporary status messages that don't need to persist")

@@ -146,8 +146,8 @@ if files_to_commit:
 else:
     cc.error("No files selected")
 
-# Summary
-cc.section("Summary")
+# Results
+cc.section("Results")
 cc.info("Interactive components provide:")
 cc.list_item("Keyboard navigation with arrow keys")
 cc.list_item("Visual feedback for current selection")

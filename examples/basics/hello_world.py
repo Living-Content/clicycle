@@ -25,13 +25,9 @@ users = [
 ]
 cc.table(users)
 
-# Show a summary
-cc.summary(
-    [
-        {"label": "Total Users", "value": len(users)},
-        {"label": "Active Users", "value": sum(1 for u in users if u["Active"])},
-    ]
-)
+# Show statistics
+cc.info(f"Total Users: {len(users)}")
+cc.info(f"Active Users: {sum(1 for u in users if u['Active'])}")
 
 # Final message
 cc.success("Application ready!")

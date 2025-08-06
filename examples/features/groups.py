@@ -53,11 +53,9 @@ with cc.group():
     cc.list_item("First item in the list")
     cc.list_item("Second item in the list")
     cc.list_item("Third item in the list")
-    cc.summary([
-        {"label": "Total", "value": 42},
-        {"label": "Completed", "value": 38},
-        {"label": "Pending", "value": 4},
-    ])
+    cc.info("Total: 42")
+    cc.info("Completed: 38")
+    cc.info("Pending: 4")
 
 cc.success("Groups are useful for creating compact, related content blocks!")
 

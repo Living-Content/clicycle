@@ -9,7 +9,6 @@ from clicycle.components.header import Header
 from clicycle.components.progress import ProgressBar
 from clicycle.components.section import Section
 from clicycle.components.spinner import Spinner
-from clicycle.components.summary import Summary
 from clicycle.components.table import Table
 from clicycle.components.text import Debug, Error, Info, ListItem, Success, WarningText
 
@@ -224,20 +223,16 @@ def showcase_progress_bars(cli):
         cli.stream.render(Success(cli.theme, f"{task} complete"))
 
 
-def showcase_summary_component(cli):
-    """Demonstrate summary component."""
-    cli.stream.render(Section(cli.theme, "Summary Component"))
+def showcase_statistics(cli):
+    """Demonstrate statistics display."""
+    cli.stream.render(Section(cli.theme, "Statistics Display"))
 
-    summary_data = [
-        {"label": "Total Files", "value": 1250},
-        {"label": "Processed", "value": 1248},
-        {"label": "Failed", "value": 2},
-        {"label": "Success Rate", "value": "99.84%"},
-        {"label": "Processing Time", "value": "2m 34s"},
-        {"label": "Average Speed", "value": "8.1 files/sec"},
-    ]
-
-    cli.stream.render(Summary(cli.theme, summary_data))
+    cli.stream.render(Info(cli.theme, "Total Files: 1250"))
+    cli.stream.render(Info(cli.theme, "Processed: 1248"))
+    cli.stream.render(Info(cli.theme, "Failed: 2"))
+    cli.stream.render(Info(cli.theme, "Success Rate: 99.84%"))
+    cli.stream.render(Info(cli.theme, "Processing Time: 2m 34s"))
+    cli.stream.render(Info(cli.theme, "Average Speed: 8.1 files/sec"))
 
 
 def showcase_spacing_behavior(cli):
@@ -290,12 +285,12 @@ def main():
     showcase_progress_bars(cli)
     time.sleep(1)
 
-    showcase_summary_component(cli)
+    showcase_statistics(cli)
     time.sleep(1)
 
     showcase_spacing_behavior(cli)
 
-    # Final summary
+    # Final message
     cli.stream.render(Section(cli.theme, "Showcase Complete"))
     cli.stream.render(Success(cli.theme, "All components demonstrated successfully!"))
     cli.stream.render(
