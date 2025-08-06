@@ -31,11 +31,9 @@ class TestProgressBar:
         pb = ProgressBar(theme, "Progress", console)
         pb.render(console)
 
-        # Should print progress description
-        console.print.assert_called_once()
-        call_args = console.print.call_args
-        assert "Progress" in str(call_args)
-        assert str(theme.icons.running) in str(call_args)
+        # ProgressBar.render() should not print anything
+        # The description is printed in the track() context manager
+        console.print.assert_not_called()
 
     @patch('clicycle.components.progress.Progress')
     def test_progressbar_context_manager(self, mock_progress_class):
@@ -50,6 +48,12 @@ class TestProgressBar:
 
         # Test track context manager
         with pb.track():
+            # Should print the description first
+            console.print.assert_called_once()
+            call_args = console.print.call_args
+            assert "Processing" in str(call_args[0][0])
+            assert theme.icons.running in str(call_args[0][0])
+            
             # Should create Rich Progress
             mock_progress_class.assert_called_once()
             assert pb._progress is mock_progress_instance
