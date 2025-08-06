@@ -18,7 +18,7 @@ from clicycle.theme import (
     Typography,
 )
 
-__version__ = "2.2.0"
+__version__ = "2.2.1"
 
 # Core exports
 __all__ = [
@@ -113,6 +113,10 @@ class _ModuleInterface(ModuleType):
         else:
             # Regular components
             def regular_wrapper(*args: Any, **kwargs: Any) -> None:
+                # For Header component, inject app_name if not provided
+                if name == "header" and "app_name" not in kwargs and self._cli.app_name:
+                    kwargs["app_name"] = self._cli.app_name
+
                 obj = component_class(self._cli.theme, *args, **kwargs)
 
                 # Special handling for debug - check verbose BEFORE rendering

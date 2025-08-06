@@ -161,13 +161,38 @@ class TestModuleInterface:
     def test_component_with_multiple_args(self):
         """Test components that take multiple arguments."""
         with patch('clicycle.rendering.stream.RenderStream.render') as mock_render:
-            cc.header("Title", "Subtitle", "App")
+            cc.header("Title", "Subtitle", app_name="App")
 
             mock_render.assert_called_once()
             component = mock_render.call_args[0][0]
             assert component.title == "Title"
             assert component.subtitle == "Subtitle"
             assert component.app_name == "App"
+
+    def test_header_app_name_injection(self):
+        """Test that app_name is injected into headers when configured."""
+        # Configure with app_name
+        cc.configure(app_name="MyApp")
+        
+        with patch('clicycle.rendering.stream.RenderStream.render') as mock_render:
+            # Create header without explicit app_name
+            cc.header("Title", "Subtitle")
+            
+            mock_render.assert_called_once()
+            component = mock_render.call_args[0][0]
+            assert component.title == "Title"
+            assert component.subtitle == "Subtitle"
+            # Should have injected app_name from configuration
+            assert component.app_name == "MyApp"
+        
+        # Test that explicit app_name overrides configured one
+        with patch('clicycle.rendering.stream.RenderStream.render') as mock_render:
+            cc.header("Title2", app_name="Override")
+            
+            mock_render.assert_called_once()
+            component = mock_render.call_args[0][0]
+            assert component.title == "Title2"
+            assert component.app_name == "Override"  # Should use explicit, not configured
 
     @patch('click.get_current_context')
     def test_debug_respects_verbose(self, mock_get_context):
