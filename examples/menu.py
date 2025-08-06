@@ -43,6 +43,8 @@ between menu levels.
 import ast
 import subprocess
 import sys
+import termios
+from contextlib import suppress
 from pathlib import Path
 
 import clicycle as cc
@@ -88,6 +90,72 @@ def get_examples():
     return categories
 
 
+def select_category(categories):
+    """Select a category from the menu."""
+    category_options = [
+        {"label": name, "value": name, "description": f"{len(examples)} examples"}
+        for name, examples in categories.items()
+    ]
+    category_options.append(
+        {"label": "Exit", "value": None, "description": "Quit the menu"}
+    )
+
+    try:
+        return cc.select("", category_options)
+    except KeyboardInterrupt:
+        print()  # New line after potential ^C
+        cc.warning("Menu cancelled")
+        return "EXIT"
+
+
+def select_example(examples):
+    """Select an example from a category."""
+    example_options = [
+        {
+            "label": ex["name"],
+            "value": str(ex["file"]),
+            "description": ex["description"],
+        }
+        for ex in examples
+    ]
+    example_options.append(
+        {"label": "← Back", "value": None, "description": "Return to categories"}
+    )
+
+    try:
+        return cc.select("", example_options)
+    except KeyboardInterrupt:
+        print()  # New line after potential ^C
+        return None
+
+
+def run_example(selected_example):
+    """Run the selected example."""
+    cc.section(f"Running: {Path(selected_example).name}")
+    cc.info("Press Ctrl+C to stop the example")
+
+    try:
+        subprocess.run([sys.executable, selected_example], check=True)
+        cc.success("Example completed!")
+    except KeyboardInterrupt:
+        # Clear the ^C that appears in terminal
+        print()  # New line after ^C
+        cc.warning("Example interrupted")
+    except Exception as e:
+        cc.error(f"Failed to run example: {e}")
+
+    # Pause before returning to menu
+    try:
+        cc.info("Press Enter to continue...")
+        # Flush stdin to clear any buffered arrow key sequences
+        with suppress(ImportError, OSError):
+            termios.tcflush(sys.stdin, termios.TCIFLUSH)
+        input()
+    except KeyboardInterrupt:
+        # User hit Ctrl+C at the prompt
+        print()  # New line after ^C
+
+
 def main():
     """Run the example menu."""
     while True:
@@ -99,19 +167,9 @@ def main():
             break
 
         # Choose category
-        category_options = [
-            {"label": name, "value": name, "description": f"{len(examples)} examples"}
-            for name, examples in categories.items()
-        ]
-        category_options.append(
-            {"label": "Exit", "value": None, "description": "Quit the menu"}
-        )
+        selected_category = select_category(categories)
 
-        try:
-            selected_category = cc.select("", category_options)
-        except KeyboardInterrupt:
-            print()  # New line after potential ^C
-            cc.warning("Menu cancelled")
+        if selected_category == "EXIT":
             break
 
         if selected_category is None:
@@ -120,49 +178,13 @@ def main():
 
         # Choose example from category
         examples = categories[selected_category]
-        example_options = [
-            {
-                "label": ex["name"],
-                "value": str(ex["file"]),
-                "description": ex["description"],
-            }
-            for ex in examples
-        ]
-        example_options.append(
-            {"label": "← Back", "value": None, "description": "Return to categories"}
-        )
-
-        try:
-            selected_example = cc.select("", example_options)
-        except KeyboardInterrupt:
-            print()  # New line after potential ^C
-            continue
+        selected_example = select_example(examples)
 
         if selected_example is None:
             continue
 
         # Run the example
-        cc.section(f"Running: {Path(selected_example).name}")
-        cc.info("Press Ctrl+C to stop the example")
-
-        try:
-            subprocess.run([sys.executable, selected_example], check=True)
-            cc.success("Example completed!")
-        except KeyboardInterrupt:
-            # Clear the ^C that appears in terminal
-            print()  # New line after ^C
-            cc.warning("Example interrupted")
-        except Exception as e:
-            cc.error(f"Failed to run example: {e}")
-
-        # Pause before returning to menu
-        try:
-            cc.info("Press Enter to continue...")
-            input()
-        except KeyboardInterrupt:
-            # User hit Ctrl+C at the prompt
-            print()  # New line after ^C
-            continue
+        run_example(selected_example)
 
 
 if __name__ == "__main__":

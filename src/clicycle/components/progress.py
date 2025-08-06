@@ -71,10 +71,11 @@ class ProgressBar(Component):
 
     def __enter__(self) -> ProgressBar:
         """Enter context manager."""
-        return self.track().__enter__()
+        self._context = self.track()
+        return self._context.__enter__()
 
     def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> Literal[False]:
         """Exit context manager."""
-        if self._progress:
-            self._progress.__exit__(exc_type, exc_val, exc_tb)
+        if hasattr(self, '_context'):
+            self._context.__exit__(exc_type, exc_val, exc_tb)
         return False

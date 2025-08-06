@@ -120,6 +120,24 @@ class TestModuleInterface:
         from clicycle.interactive.multi_select import interactive_multi_select
         assert cc.multi_select is interactive_multi_select
 
+    def test_multi_progress(self):
+        """Test multi_progress returns a Progress object."""
+        with (
+            patch('clicycle.components.multi_progress.MultiProgress') as mock_mp_class,
+            patch('clicycle.rendering.stream.RenderStream.render') as mock_render
+        ):
+            mock_mp_instance = MagicMock()
+            mock_mp_class.return_value = mock_mp_instance
+
+            result = cc.multi_progress("Processing tasks")
+
+            # Should create and render MultiProgress component
+            mock_mp_class.assert_called_once_with(cc._cli.theme, "Processing tasks", cc._cli.console)
+            mock_render.assert_called_once_with(mock_mp_instance)
+
+            # Should return the MultiProgress instance
+            assert result is mock_mp_instance
+
     def test_attribute_error_for_unknown(self):
         """Test that unknown attributes raise AttributeError."""
         try:
