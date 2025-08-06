@@ -18,7 +18,7 @@ from clicycle.theme import (
     Typography,
 )
 
-__version__ = "2.1.0"
+__version__ = "2.1.1"
 
 # Core exports
 __all__ = [

@@ -15,7 +15,6 @@ from rich.progress import (
     TaskProgressColumn,
     TextColumn,
 )
-from rich.table import Column
 
 from clicycle.components.base import Component
 from clicycle.theme import Theme
@@ -35,21 +34,25 @@ class ProgressBar(Component):
 
     def render(self, console: Console) -> None:
         """Render progress bar title/description."""
-        # The actual progress bar is handled by the context manager
-        console.print(
-            f"{self.theme.icons.running} {self.description}",
-            style=self.theme.typography.info_style,
-        )
+        # For progress bars, we don't render anything here since the
+        # description is shown as part of the Rich Progress bar itself
+        pass
 
     @contextmanager
     def track(self) -> Generator[ProgressBar, None, None]:
         """Context manager for progress tracking."""
+        # Print the description first
+        self.console.print(
+            f"{self.theme.icons.running} {self.description}",
+            style=self.theme.typography.info_style,
+        )
+
+        # Then create the progress bar without the description
         self._progress = Progress(
             BarColumn(),
             TaskProgressColumn(),
             TextColumn(
                 "[progress.description]{task.description}",
-                table_column=Column(width=50),
             ),
             console=self.console,
         )
