@@ -53,7 +53,7 @@ class TestProgressBar:
             call_args = console.print.call_args
             assert "Processing" in str(call_args[0][0])
             assert theme.icons.running in str(call_args[0][0])
-            
+
             # Should create Rich Progress
             mock_progress_class.assert_called_once()
             assert pb._progress is mock_progress_instance
