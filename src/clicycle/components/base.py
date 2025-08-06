@@ -38,15 +38,12 @@ class Component(ABC):
             # Default spacing
             spacing = 1
 
-        print(f"[SPACING] {self.component_type} after {self._previous_component.component_type}: base={spacing}, was_transient={getattr(self._previous_component, 'was_transient', 'N/A')}")
-
         # If previous component was transient (disappeared), reduce spacing by 1
         if (
             hasattr(self._previous_component, "was_transient")
             and self._previous_component.was_transient
         ):
             spacing = max(0, spacing - 1)
-            print(f"[SPACING] Reduced to {spacing} due to transient")
 
         return spacing
 
