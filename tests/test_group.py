@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, mock_open, patch
 
 from rich.console import Console
 
+import clicycle as cc
 from clicycle.clicycle import Clicycle
 from clicycle.components.text import Text
 from clicycle.modifiers.group import Group
@@ -103,8 +104,6 @@ class TestGroupIntegration:
 
     def test_group_through_module_interface(self):
         """Test accessing group through module interface."""
-        import clicycle as cc
-
         assert hasattr(cc, 'group')
         assert callable(cc.group)
 

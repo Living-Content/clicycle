@@ -1,48 +1,48 @@
 #!/usr/bin/env python3
 """Complete showcase of all Clicycle components and features."""
 
+import logging
 import sys
 import time
 
-from clicycle import Clicycle, Theme
+from clicycle import Clicycle
 from clicycle.components.code import Code, json_code
 from clicycle.components.header import Header
 from clicycle.components.progress import ProgressBar
 from clicycle.components.section import Section
 from clicycle.components.spinner import Spinner
 from clicycle.components.table import Table
-from clicycle.components.text import Debug, Error, Info, ListItem, Success, WarningText
+from clicycle.components.text import Error, Info, ListItem, Success, WarningText
+
+logger = logging.getLogger(__name__)
 
 
 def showcase_text_components(cli):
     """Demonstrate all text component types."""
     cli.stream.render(Section(cli.theme, "Text Components"))
-    cli.stream.render(Debug(cli.theme, "[DEBUG] Starting text components demonstration"))
+    logger.debug("Starting text components demonstration")
 
     cli.stream.render(Info(cli.theme, "This is an info message"))
-    cli.stream.render(Debug(cli.theme, "[DEBUG] Info messages use cyan color"))
+    logger.debug("Info messages use cyan color")
 
     cli.stream.render(Success(cli.theme, "This is a success message"))
-    cli.stream.render(Debug(cli.theme, "[DEBUG] Success messages use green with checkmark icon"))
+    logger.debug("Success messages use green with checkmark icon")
 
     cli.stream.render(WarningText(cli.theme, "This is a warning message"))
-    cli.stream.render(Debug(cli.theme, "[DEBUG] Warning messages use yellow with warning icon"))
+    logger.debug("Warning messages use yellow with warning icon")
 
     cli.stream.render(Error(cli.theme, "This is an error message"))
-    cli.stream.render(Debug(cli.theme, "[DEBUG] Error messages use red with X icon"))
+    logger.debug("Error messages use red with X icon")
 
-    cli.stream.render(
-        Debug(cli.theme, "This is a debug message (only shown in verbose mode)")
-    )
-    cli.stream.render(Debug(cli.theme, "[DEBUG] Debug messages help trace program flow"))
+    logger.debug("Debug messages now use Python's standard logging")
 
     # List items
     cli.stream.render(Info(cli.theme, "Here's a list:"))
-    cli.stream.render(Debug(cli.theme, "[DEBUG] List items are indented by 2 spaces by default"))
+    logger.debug("List items are indented by 2 spaces by default")
     cli.stream.render(ListItem(cli.theme, "First item"))
     cli.stream.render(ListItem(cli.theme, "Second item"))
     cli.stream.render(ListItem(cli.theme, "Third item with a longer description"))
-    cli.stream.render(Debug(cli.theme, "[DEBUG] List items have no spacing between them"))
+    logger.debug("List items have no spacing between them")
 
 
 def showcase_headers_sections(cli):
@@ -176,39 +176,44 @@ def showcase_disappearing_spinners(cli):
     """Demonstrate disappearing spinners."""
     cli.stream.render(Section(cli.theme, "Disappearing Spinners"))
 
-    # Create new CLI with disappearing spinners
-    theme = Theme(disappearing_spinners=True)
-    cli2 = Clicycle(theme=theme)
+    # Save original setting
+    original_disappearing = cli.theme.disappearing_spinners
 
-    cli2.stream.render(
-        Info(cli2.theme, "Disappearing spinner (message vanishes after completion):")
+    # Enable disappearing spinners for this demo
+    cli.theme.disappearing_spinners = True
+
+    cli.stream.render(
+        Info(cli.theme, "Disappearing spinner (message vanishes after completion):")
     )
 
-    spinner = Spinner(cli2.theme, "This message will disappear...", cli2.console)
-    cli2.stream.render(spinner)
+    spinner = Spinner(cli.theme, "This message will disappear...", cli.console)
+    cli.stream.render(spinner)
     with spinner:
         time.sleep(2)
 
-    cli2.stream.render(Success(cli2.theme, "Notice the spinner message is gone!"))
+    cli.stream.render(Success(cli.theme, "Notice the spinner message is gone!"))
 
     # Nested spinners
-    cli2.stream.render(Info(cli2.theme, "Nested disappearing spinners:"))
+    cli.stream.render(Info(cli.theme, "Nested disappearing spinners:"))
 
-    spinner1 = Spinner(cli2.theme, "Outer operation...", cli2.console)
-    cli2.stream.render(spinner1)
+    spinner1 = Spinner(cli.theme, "Outer operation...", cli.console)
+    cli.stream.render(spinner1)
     with spinner1:
         time.sleep(1)
-        cli2.stream.render(Info(cli2.theme, "Starting inner task"))
+        cli.stream.render(Info(cli.theme, "Starting inner task"))
 
-        spinner2 = Spinner(cli2.theme, "Inner operation...", cli2.console)
-        cli2.stream.render(spinner2)
+        spinner2 = Spinner(cli.theme, "Inner operation...", cli.console)
+        cli.stream.render(spinner2)
         with spinner2:
             time.sleep(1)
 
-        cli2.stream.render(Info(cli2.theme, "Inner task complete"))
+        cli.stream.render(Info(cli.theme, "Inner task complete"))
         time.sleep(1)
 
-    cli2.stream.render(Success(cli2.theme, "All operations complete!"))
+    cli.stream.render(Success(cli.theme, "All operations complete!"))
+
+    # Restore original setting
+    cli.theme.disappearing_spinners = original_disappearing
 
 
 def showcase_progress_bars(cli):
@@ -279,26 +284,23 @@ def showcase_spacing_behavior(cli):
 
 def main():
     """Run the complete showcase."""
-    # Check for verbose flag
-    verbose = "--verbose" in sys.argv or "-v" in sys.argv
+    # Check for debug flag and configure logging
+    debug = "--debug" in sys.argv or "-d" in sys.argv
 
-    # Create a mock click context for Debug components to work
-    import click
-    from click.globals import push_context
-
-    ctx = click.Context(click.Command('demo'))
-    ctx.obj = {"verbose": verbose}
-    push_context(ctx)
+    if debug:
+        logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
+    else:
+        logging.basicConfig(level=logging.INFO)
 
     # Create CLI instance
     cli = Clicycle(app_name="Clicycle Showcase")
 
-    if verbose:
-        cli.stream.render(Info(cli.theme, "Running in VERBOSE mode - debug messages will be shown"))
+    if debug:
+        cli.stream.render(Info(cli.theme, "Running in DEBUG mode - debug messages will be shown"))
     else:
-        cli.stream.render(Info(cli.theme, "Running in NORMAL mode - debug messages hidden (use --verbose to see them)"))
+        cli.stream.render(Info(cli.theme, "Running in NORMAL mode - debug messages hidden (use --debug to see them)"))
 
-    cli.stream.render(Debug(cli.theme, "[DEBUG] Application initialized"))
+    logger.debug("Application initialized")
 
     # Run all showcases
     showcase_headers_sections(cli)

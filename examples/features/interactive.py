@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Interactive components demonstration."""
 
+import time
+
 import clicycle as cc
 
 cc.header("Interactive Components Demo", "Arrow keys, checkboxes, and more!")
@@ -137,8 +139,6 @@ if files_to_commit:
     if commit_type:
         cc.info(f"Creating {commit_type} commit with {len(files_to_commit)} files...")
         with cc.spinner("Committing changes..."):
-            import time
-
             time.sleep(1)
         cc.success("Changes committed successfully!")
     else:

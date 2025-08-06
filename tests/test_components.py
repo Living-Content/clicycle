@@ -2,16 +2,18 @@
 
 from unittest.mock import MagicMock, patch
 
+import pytest
 from rich.console import Console
 from rich.syntax import Syntax
 from rich.table import Table as RichTable
 
+from clicycle.components.base import Component
 from clicycle.components.code import Code
 from clicycle.components.header import Header
 from clicycle.components.section import Section
 from clicycle.components.spinner import Spinner
 from clicycle.components.table import Table
-from clicycle.components.text import Debug, Text
+from clicycle.components.text import Error, ListItem, Success, Text, WarningText
 from clicycle.theme import Theme
 
 
@@ -58,6 +60,38 @@ class TestBaseComponent:
         assert comp.get_spacing_before() == 0
 
 
+class TestComponentBase:
+    """Test the base Component class."""
+
+    def test_deferred_render_skips_spacing(self):
+        """Test that deferred components skip render_with_spacing."""
+
+        # Create a test component with deferred_render attribute
+        class DeferredComponent(Component):
+            deferred_render = True
+            component_type = "test"
+
+            def render(self, console: Console) -> None:
+                console.print("Should not be called")
+
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        component = DeferredComponent(theme)
+        component.render_with_spacing(console)
+
+        # Should return early and not call console.print
+        console.print.assert_not_called()
+
+    def test_abstract_render_method(self):
+        """Test that render method is abstract."""
+        theme = Theme()
+
+        # Should not be able to instantiate Component directly
+        with pytest.raises(TypeError):
+            Component(theme)
+
+
 class TestText:
     """Test the Text component."""
 
@@ -85,6 +119,66 @@ class TestText:
         console.print.assert_called_once()
         call_args = console.print.call_args[0]
         assert "    " in str(call_args)  # 4 spaces
+
+
+class TestTextComponents:
+    """Test specific text component subclasses."""
+
+    def test_success_component(self):
+        """Test Success component initialization and rendering."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        success = Success(theme, "Operation successful")
+        assert success.text_type == "success"
+        assert success.component_type == "success"
+
+        success.render(console)
+        console.print.assert_called_once()
+        call_args = console.print.call_args[0][0]
+        assert theme.icons.success in call_args
+
+    def test_error_component(self):
+        """Test Error component initialization and rendering."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        error = Error(theme, "Something went wrong")
+        assert error.text_type == "error"
+        assert error.component_type == "error"
+
+        error.render(console)
+        console.print.assert_called_once()
+        call_args = console.print.call_args[0][0]
+        assert theme.icons.error in call_args
+
+    def test_warning_component(self):
+        """Test WarningText component initialization and rendering."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        warning = WarningText(theme, "Be careful")
+        assert warning.text_type == "warning"
+        assert warning.component_type == "warning"
+
+        warning.render(console)
+        console.print.assert_called_once()
+        call_args = console.print.call_args[0][0]
+        assert theme.icons.warning in call_args
+
+    def test_list_item_component(self):
+        """Test ListItem component initialization and rendering."""
+        theme = Theme()
+        console = MagicMock(spec=Console)
+
+        item = ListItem(theme, "First item")
+        assert item.text_type == "list_item"
+        assert item.component_type == "list_item"
+
+        item.render(console)
+        console.print.assert_called_once()
+        call_args = console.print.call_args[0][0]
+        assert theme.icons.bullet in call_args
 
 
 class TestHeader:
@@ -222,56 +316,6 @@ class TestCode:
         code.render(console)
 
         console.print.assert_called()
-
-
-class TestDebug:
-    """Test the Debug component."""
-
-    @patch('click.get_current_context')
-    def test_debug_verbose_true(self, mock_get_context):
-        """Test debug renders when verbose is True."""
-        theme = Theme()
-        console = MagicMock(spec=Console)
-
-        mock_ctx = MagicMock()
-        mock_ctx.obj = {"verbose": True}
-        mock_get_context.return_value = mock_ctx
-
-        debug = Debug(theme, "Debug info")
-        debug.render(console)
-
-        # Should render the message
-        console.print.assert_called_once()
-
-    @patch('click.get_current_context')
-    def test_debug_verbose_false(self, mock_get_context):
-        """Test debug doesn't render when verbose is False."""
-        theme = Theme()
-        console = MagicMock(spec=Console)
-
-        mock_ctx = MagicMock()
-        mock_ctx.obj = {"verbose": False}
-        mock_get_context.return_value = mock_ctx
-
-        debug = Debug(theme, "Debug info")
-        debug.render(console)
-
-        # Should not render
-        console.print.assert_not_called()
-
-    @patch('click.get_current_context')
-    def test_debug_no_context(self, mock_get_context):
-        """Test debug doesn't render when no context."""
-        theme = Theme()
-        console = MagicMock(spec=Console)
-
-        mock_get_context.side_effect = RuntimeError("No context")
-
-        debug = Debug(theme, "Debug info")
-        debug.render(console)
-
-        # Should not render
-        console.print.assert_not_called()
 
 
 class TestSpinner:

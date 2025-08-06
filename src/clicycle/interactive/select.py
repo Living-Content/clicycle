@@ -107,7 +107,6 @@ def interactive_select(
     default_index: int = 0,
 ) -> Any:
     """Show an interactive select menu with arrow key navigation."""
-    import sys
     clicycle_module = sys.modules.get('clicycle')
     if clicycle_module is None:
         raise RuntimeError("clicycle module not imported")

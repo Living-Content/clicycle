@@ -45,7 +45,6 @@ cc.info("Information message")
 cc.success("Operation successful")
 cc.error("Something went wrong") 
 cc.warning("Be careful")
-cc.debug("Debug info")  # Only shown in verbose mode
 cc.list_item("Bullet point")
 
 # Structure
@@ -105,35 +104,24 @@ cc.theme.icons.success = "✅"
 cc.clear()  # Clear screen
 ```
 
-## Debug Messages and Verbose Mode
+## Debug Messages and Logging
 
-Debug messages are hidden by default and only shown when verbose mode is enabled.
-
-### With Click
+For debug messages, use Python's standard logging module:
 
 ```python
-@click.command()
-@click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
-@click.pass_context
-def main(ctx, verbose):
-    ctx.ensure_object(dict)
-    ctx.obj['verbose'] = verbose
-    
-    cc.debug("This only appears with --verbose")
-    cc.info("This always appears")
-```
+import logging
 
-### Without Click
+# Configure logging level based on command line flag
+if '--debug' in sys.argv:
+    logging.basicConfig(level=logging.DEBUG)
+else:
+    logging.basicConfig(level=logging.INFO)
 
-```python
-from click.globals import push_context
+logger = logging.getLogger(__name__)
 
-verbose = '--verbose' in sys.argv
-ctx = click.Context(click.Command('app'))
-ctx.obj = {'verbose': verbose}
-push_context(ctx)
-
-cc.debug("Verbose mode message")
+# Use standard logging for debug messages
+logger.debug("This only appears when logging level is DEBUG")
+cc.info("This always appears")
 ```
 
 ## Themes

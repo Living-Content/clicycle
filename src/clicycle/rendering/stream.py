@@ -21,17 +21,6 @@ class RenderStream:
 
     def render(self, component: Component) -> None:
         """Tell component to render itself with proper context."""
-        # Special case: Debug components that won't render shouldn't affect spacing
-        if component.component_type == "debug":
-            # Check if debug will actually render
-            try:
-                import click
-                ctx = click.get_current_context()
-                if ctx.obj and isinstance(ctx.obj, dict) and not ctx.obj.get("verbose", False):
-                    return  # Don't add to history or render
-            except RuntimeError:
-                return  # No click context, don't render
-
         # For deferred components, set context first then add to history
         # For regular components, they get added after any deferred component
         if hasattr(component, 'deferred_render') and component.deferred_render:

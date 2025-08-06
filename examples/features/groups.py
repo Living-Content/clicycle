@@ -19,11 +19,10 @@ cc.section("Grouped Components")
 cc.info("The group() context manager removes spacing between components:")
 
 with cc.group():
-    cc.info("→ This is info")
-    cc.success("✓ This is success")
-    cc.warning("⚠ This is warning")
-    cc.error("✗ This is error")
-    cc.debug("🔍 This is debug")
+    cc.info("This is info")
+    cc.success("This is success")
+    cc.warning("This is warning")
+    cc.error("This is error")
 
 cc.info("Normal spacing resumes after the group.")
 
@@ -33,11 +32,11 @@ cc.section("Practical Example: Status Report")
 with cc.group():
     cc.info("System Status Report")
     cc.info("━" * 40)
-    cc.success("✓ Database: Connected")
-    cc.success("✓ API: Responding (45ms)")
-    cc.warning("⚠ Cache: High memory usage (87%)")
-    cc.success("✓ Queue: 12 jobs pending")
-    cc.error("✗ Backup: Last run failed")
+    cc.success("Database: Connected")
+    cc.success("API: Responding (45ms)")
+    cc.warning("Cache: High memory usage (87%)")
+    cc.success("Queue: 12 jobs pending")
+    cc.error("Backup: Last run failed")
     cc.info("━" * 40)
     cc.info("Generated at: 2024-12-09 15:30:45")
 
