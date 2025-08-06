@@ -244,12 +244,12 @@ def _initialize_module_interface() -> bool:
         # Set up the interface manually by adding methods to current module
         current_module = sys.modules[__name__]
         interface = _ModuleInterface(current_module)
-        
+
         # Copy all interface methods to current module
         for attr_name in dir(interface):
             if not attr_name.startswith('_'):
                 setattr(current_module, attr_name, getattr(interface, attr_name))
-        
+
         return False
 
 # Initialize the interface
