@@ -54,13 +54,14 @@ config = {
 }
 cc.json(config, title="Application Config")
 
-# Summary data
-cc.summary(
-    [
-        {"label": "Total Users", "value": 1250},
-        {"label": "Active Sessions", "value": 342},
-        {"label": "CPU Usage", "value": "45%"},
-        {"label": "Memory", "value": "2.1 GB"},
+# Table data
+cc.table(
+    headers=["Metric", "Value"],
+    rows=[
+        ["Total Users", "1250"],
+        ["Active Sessions", "342"],
+        ["CPU Usage", "45%"],
+        ["Memory", "2.1 GB"],
     ]
 )
 

@@ -16,17 +16,38 @@ class RenderStream:
     def __init__(self, console: Console):
         self.console = console
         self.history: list[Component] = []
+        self.in_live_context = False  # Track if we're in a progress/spinner context
+        self.deferred_component: Component | None = None  # Track the current deferred component
 
     def render(self, component: Component) -> None:
         """Tell component to render itself with proper context."""
-        # Set context - what came before
-        component.set_context(self.last_component)
+        # For deferred components, set context first then add to history
+        # For regular components, they get added after any deferred component
+        if hasattr(component, 'deferred_render') and component.deferred_render:
+            # Deferred components get context from last component in history
+            last_comp = self.last_component
+            component.set_context(last_comp)
+
+            # Add to history immediately so it's available for spacing calculations
+            self.history.append(component)
+            self.deferred_component = component
+            self.in_live_context = True
+        else:
+            # Regular components can always render
+            # If there was a deferred component, use it as context
+            last_comp = self.last_component
+            component.set_context(last_comp)
+
+            # Add regular component to history
+            self.history.append(component)
+
+            # Clear deferred tracking if it was set
+            if self.deferred_component:
+                self.deferred_component = None
+                self.in_live_context = False
 
         # Component renders itself with spacing
         component.render_with_spacing(self.console)
-
-        # Track in history
-        self.history.append(component)
 
     @property
     def last_component(self) -> Component | None:

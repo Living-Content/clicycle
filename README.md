@@ -56,7 +56,6 @@ cc.section("Section Name")
 cc.table([{"Name": "Alice", "Age": 30}], title="Users")
 cc.code("print('hello')", language="python", title="Example")
 cc.json({"key": "value"}, title="Config")
-cc.summary([{"label": "Total", "value": 100}])
 
 # Progress indicators (context managers)
 with cc.spinner("Loading..."):
@@ -174,6 +173,7 @@ with spinner:
 Clicycle provides smooth, responsive interactive components with vertical arrow-key navigation:
 
 ### Select Menu
+
 ```python
 # Simple selection
 choice = cc.select("Choose a framework:", ["React", "Vue", "Angular"])
@@ -188,6 +188,7 @@ choice = cc.select("Choose a framework:", options)
 ```
 
 ### Multi-Select Menu
+
 ```python
 # Multiple selections with constraints
 choices = cc.multi_select(
@@ -199,12 +200,14 @@ choices = cc.multi_select(
 ```
 
 **Navigation:**
+
 - ↑/↓: Navigate options
 - Enter: Select/Submit
 - Space: Toggle (multi-select only)
 - q/Ctrl+C: Cancel
 
 **Features:**
+
 - Clean vertical navigation without screen clearing
 - Automatic fallback to numbered input on non-interactive terminals
 - Real-time visual feedback
@@ -220,19 +223,22 @@ python examples/menu.py
 
 Or explore individual examples:
 
-**Basics**
+### Basics
+
 - `basics/hello_world.py` - Simple introduction
 - `basics/all_components.py` - Tour of all components
 
-**Features**
+### Feature
+
 - `features/interactive.py` - Arrow-key selection and checkboxes
 - `features/spinners.py` - Disappearing spinner functionality
 - `features/themes.py` - Custom themes (emoji, minimal, matrix)
 
-**Advanced**
+### Advanced
+
 - `advanced/full_app.py` - Complete application showcase
 
-### Quick Example
+### Hello World
 
 ```python
 import clicycle as cc

@@ -19,6 +19,7 @@ class Spinner(Component):
     """Spinner component that manages its own lifecycle."""
 
     component_type = "spinner"
+    deferred_render = True  # Don't render immediately, wait for context manager
 
     def __init__(self, theme: Theme, message: str, console: Console):
         super().__init__(theme)
@@ -39,6 +40,11 @@ class Spinner(Component):
 
     def __enter__(self) -> Spinner:
         """Context manager entry - start the spinner."""
+        # Apply spacing BEFORE the spinner starts
+        spacing = self.get_spacing_before()
+        if spacing > 0:
+            self.console.print("\n" * spacing, end="")
+
         if self.theme.disappearing_spinners:
             # Create a grid table for spinner + text
             spinner = RichSpinner(
@@ -80,4 +86,5 @@ class Spinner(Component):
                 self.console.print(
                     f"[{self.theme.typography.info_style}]{self.message}[/]"
                 )
+
         return False

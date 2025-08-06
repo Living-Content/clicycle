@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.3] - 2025-08-06
+
+**Fixed:**
+
+- Fixed blank line appearing between progress bar descriptions and actual progress bars
+- Fixed spacing issues for persistent (non-disappearing) spinners  
+- Improved deferred rendering architecture for progress/spinner components
+- Fixed debug components interfering with live displays
+- Changed default `disappearing_spinners` to `False` for better UX
+
+**Changed:**
+
+- Introduced `deferred_render` flag for components that use context managers
+- Improved stream orchestration to handle live context transitions properly
+- Components now properly remain in history for spacing calculations
+
 ## [2.1.2] - 2025-01-06
 
 **Fixed:**

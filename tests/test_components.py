@@ -10,7 +10,6 @@ from clicycle.components.code import Code
 from clicycle.components.header import Header
 from clicycle.components.section import Section
 from clicycle.components.spinner import Spinner
-from clicycle.components.summary import Summary
 from clicycle.components.table import Table
 from clicycle.components.text import Debug, Text
 from clicycle.theme import Theme
@@ -166,25 +165,6 @@ class TestListItem:
         assert "      " in str(call_args)  # 6 spaces
 
 
-class TestSummary:
-    """Test the Summary component."""
-
-    def test_summary_render(self):
-        """Test summary rendering."""
-        theme = Theme()
-        console = MagicMock(spec=Console)
-
-        data = [
-            {"label": "Name", "value": "Test"},
-            {"label": "Count", "value": 42}
-        ]
-        summary = Summary(theme, data)
-        summary.render(console)
-
-        # Should print a grid/table
-        console.print.assert_called()
-
-
 class TestTable:
     """Test the Table component."""
 
@@ -300,7 +280,16 @@ class TestSpinner:
     def test_spinner_context_manager(self):
         """Test spinner as context manager."""
         theme = Theme()
-        console = MagicMock(spec=Console)
+        console = MagicMock()
+        console.is_jupyter = False
+        console._live_stack = []
+        console.set_live = MagicMock(return_value=True)
+        console.set_alt_screen = MagicMock(return_value=False)
+        console.show_cursor = MagicMock()
+        console.push_render_hook = MagicMock()
+        console.pop_render_hook = MagicMock()
+        console.print = MagicMock()
+        console.status = MagicMock()
 
         spinner = Spinner(theme, "Loading...", console)
 

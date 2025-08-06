@@ -38,17 +38,25 @@ class Component(ABC):
             # Default spacing
             spacing = 1
 
+        print(f"[SPACING] {self.component_type} after {self._previous_component.component_type}: base={spacing}, was_transient={getattr(self._previous_component, 'was_transient', 'N/A')}")
+
         # If previous component was transient (disappeared), reduce spacing by 1
         if (
             hasattr(self._previous_component, "was_transient")
             and self._previous_component.was_transient
         ):
             spacing = max(0, spacing - 1)
+            print(f"[SPACING] Reduced to {spacing} due to transient")
 
         return spacing
 
     def render_with_spacing(self, console: Console) -> None:
         """Render this component with appropriate spacing."""
+        # For deferred components (progress/spinner), don't do anything here
+        # They handle their own spacing and rendering when their context manager starts
+        if hasattr(self, 'deferred_render') and self.deferred_render:
+            return
+
         # Apply spacing
         spacing = self.get_spacing_before()
         if spacing > 0:

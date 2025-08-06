@@ -24,6 +24,7 @@ class ProgressBar(Component):
     """Progress bar component - indicates ongoing operation with progress."""
 
     component_type = "progress"
+    deferred_render = True  # Don't render immediately, wait for context manager
 
     def __init__(self, theme: Theme, description: str, console: Console):
         super().__init__(theme)
@@ -41,20 +42,23 @@ class ProgressBar(Component):
     @contextmanager
     def track(self) -> Generator[ProgressBar, None, None]:
         """Context manager for progress tracking."""
-        # Print the description first
-        self.console.print(
-            f"{self.theme.icons.running} {self.description}",
-            style=self.theme.typography.info_style,
-        )
+        # Apply spacing BEFORE the progress bar starts
+        spacing = self.get_spacing_before()
+        if spacing > 0:
+            self.console.print("\n" * spacing, end="")
 
-        # Then create the progress bar without the description
+        # Print the description on its own line
+        self.console.print(f"{self.theme.icons.running} {self.description}")
+
+        # The stream will handle live context when this component is rendered
+
+        # Create progress bar WITHOUT description (since we printed it above)
         self._progress = Progress(
             BarColumn(),
             TaskProgressColumn(),
-            TextColumn(
-                "[progress.description]{task.description}",
-            ),
+            TextColumn("[progress.description]{task.description}"),
             console=self.console,
+            transient=False,
         )
         self._task_id = self._progress.add_task("", total=100)
 
@@ -62,6 +66,7 @@ class ProgressBar(Component):
             with self._progress:
                 yield self
         finally:
+            # The stream will handle cleanup when the next component is rendered
             self._progress = None
             self._task_id = None
 
@@ -77,8 +82,13 @@ class ProgressBar(Component):
         self._context = self.track()
         return self._context.__enter__()
 
-    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> Literal[False]:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> Literal[False]:
         """Exit context manager."""
-        if hasattr(self, '_context'):
+        if hasattr(self, "_context"):
             self._context.__exit__(exc_type, exc_val, exc_tb)
         return False
