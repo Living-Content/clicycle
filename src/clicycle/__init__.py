@@ -18,7 +18,7 @@ from clicycle.theme import (
     Typography,
 )
 
-__version__ = "2.1.4"
+__version__ = "2.2.0"
 
 # Core exports
 __all__ = [
@@ -137,29 +137,48 @@ class _ModuleInterface(ModuleType):
 
     def _handle_special_function(self, name: str, sentinel: object) -> Any:
         """Handle special functions that are not auto-discovered."""
+        # Try different handler groups
+        handlers = [
+            self._handle_json_function,
+            self._handle_interactive_functions,
+            self._handle_progress_function,
+            self._handle_group_function,
+            self._handle_prompt_functions,
+        ]
+
+        for handler in handlers:
+            result = handler(name)
+            if result is not None:
+                setattr(self, name, result)
+                return result
+
+        return sentinel
+
+    def _handle_json_function(self, name: str) -> Any:
+        """Handle JSON function."""
         if name == "json":
             from clicycle.components.code import json_code
 
             def json_wrapper(data: Any, title: str | None = None) -> None:
                 self._cli.stream.render(json_code(self._cli.theme, data, title))
 
-            setattr(self, name, json_wrapper)
             return json_wrapper
+        return None
 
-        # Interactive components
+    def _handle_interactive_functions(self, name: str) -> Any:
+        """Handle interactive select functions."""
         if name == "select":
             from clicycle.interactive.select import interactive_select
-
-            setattr(self, name, interactive_select)
             return interactive_select
 
         if name == "multi_select":
             from clicycle.interactive.multi_select import interactive_multi_select
-
-            setattr(self, name, interactive_multi_select)
             return interactive_multi_select
 
-        # Special handling for multi_progress that returns Progress object
+        return None
+
+    def _handle_progress_function(self, name: str) -> Any:
+        """Handle multi_progress function."""
         if name == "multi_progress":
             from clicycle.components.multi_progress import MultiProgress
 
@@ -168,18 +187,54 @@ class _ModuleInterface(ModuleType):
                 self._cli.stream.render(obj)
                 return obj
 
-            setattr(self, name, multi_progress_wrapper)
             return multi_progress_wrapper
+        return None
 
-        # Group context manager
+    def _handle_group_function(self, name: str) -> Any:
+        """Handle group context manager."""
         if name == "group":
             def group_wrapper() -> Any:
                 return self._cli.group()
-
-            setattr(self, name, group_wrapper)
             return group_wrapper
+        return None
 
-        return sentinel
+    def _handle_prompt_functions(self, name: str) -> Any:
+        """Handle prompt component functions."""
+        if name == "prompt":
+            from clicycle.components.prompt import Prompt
+
+            def prompt_wrapper(text: str, **kwargs: Any) -> Any:
+                obj = Prompt(self._cli.theme, text, **kwargs)
+                # Input components go through stream for spacing
+                self._cli.stream.render(obj)
+                return obj.ask()
+            return prompt_wrapper
+
+        if name == "confirm":
+            from clicycle.components.prompt import Confirm
+
+            def confirm_wrapper(text: str, **kwargs: Any) -> bool:
+                obj = Confirm(self._cli.theme, text, **kwargs)
+                # Input components go through stream for spacing
+                self._cli.stream.render(obj)
+                return obj.ask()
+            return confirm_wrapper
+
+        if name == "select_list":
+            from clicycle.components.prompt import SelectList
+
+            def select_list_wrapper(
+                item_name: str,
+                options: list[str],
+                default: str | None = None,
+            ) -> str:
+                obj = SelectList(self._cli.theme, item_name, options, default)
+                # Go through the stream for proper spacing
+                self._cli.stream.render(obj)
+                return obj.ask()
+            return select_list_wrapper
+
+        return None
 
 
 # Replace this module with our wrapper

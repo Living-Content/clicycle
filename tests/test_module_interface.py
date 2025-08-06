@@ -199,3 +199,67 @@ class TestModuleInterface:
             cc.debug("Debug without context")
             # Should not render when no context
             mock_text_render.assert_not_called()
+
+    def test_prompt_function(self):
+        """Test prompt function wrapper."""
+        assert hasattr(cc, 'prompt')
+
+        with (
+            patch('clicycle.rendering.stream.RenderStream.render') as mock_render,
+            patch('clicycle.components.prompt.Prompt.ask') as mock_ask
+        ):
+            mock_ask.return_value = "test input"
+            result = cc.prompt("Enter something")
+
+            # Should have rendered the prompt component
+            mock_render.assert_called_once()
+            component = mock_render.call_args[0][0]
+            assert component.__class__.__name__ == 'Prompt'
+            assert component.text == "Enter something"
+
+            # Should return the result from ask()
+            assert result == "test input"
+            mock_ask.assert_called_once()
+
+    def test_confirm_function(self):
+        """Test confirm function wrapper."""
+        assert hasattr(cc, 'confirm')
+
+        with (
+            patch('clicycle.rendering.stream.RenderStream.render') as mock_render,
+            patch('clicycle.components.prompt.Confirm.ask') as mock_ask
+        ):
+            mock_ask.return_value = True
+            result = cc.confirm("Are you sure?")
+
+            # Should have rendered the confirm component
+            mock_render.assert_called_once()
+            component = mock_render.call_args[0][0]
+            assert component.__class__.__name__ == 'Confirm'
+            assert component.text == "Are you sure?"
+
+            # Should return the result from ask()
+            assert result is True
+            mock_ask.assert_called_once()
+
+    def test_select_list_function(self):
+        """Test select_list function wrapper."""
+        assert hasattr(cc, 'select_list')
+
+        with (
+            patch('clicycle.rendering.stream.RenderStream.render') as mock_render,
+            patch('clicycle.components.prompt.SelectList.ask') as mock_ask
+        ):
+            mock_ask.return_value = "option2"
+            result = cc.select_list("item", ["option1", "option2", "option3"])
+
+            # Should have rendered the select_list component
+            mock_render.assert_called_once()
+            component = mock_render.call_args[0][0]
+            assert component.__class__.__name__ == 'SelectList'
+            assert component.item_name == "item"
+            assert component.options == ["option1", "option2", "option3"]
+
+            # Should return the result from ask()
+            assert result == "option2"
+            mock_ask.assert_called_once()

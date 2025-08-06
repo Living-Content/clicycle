@@ -14,41 +14,41 @@ class TestPrompt:
     def test_prompt_init(self):
         """Test Prompt initialization."""
         theme = Theme()
-        console = MagicMock(spec=Console)
 
-        prompt = Prompt(theme, "Enter name", console, default="John")
+        prompt = Prompt(theme, "Enter name", default="John")
 
         assert prompt.text == "Enter name"
-        assert prompt.console is console
         assert prompt.kwargs == {"default": "John"}
 
-    def test_prompt_render_does_nothing(self):
-        """Test that render method does nothing."""
+    def test_prompt_render_asks_for_input(self):
+        """Test that render method asks for input."""
         theme = Theme()
         console = MagicMock(spec=Console)
 
-        prompt = Prompt(theme, "Enter name", console)
-        prompt.render(console)
+        prompt = Prompt(theme, "Enter name")
 
-        # Should not call console
-        console.print.assert_not_called()
+        with patch('rich.prompt.Prompt.ask') as mock_ask:
+            mock_ask.return_value = "test value"
+            prompt.render(console)
 
-    @patch('clicycle.components.prompt.RichPrompt')
-    def test_prompt_ask(self, mock_rich_prompt):
-        """Test asking for input."""
+            assert prompt.result == "test value"
+            mock_ask.assert_called_once_with(
+                "Enter name", console=console
+            )
+
+    def test_prompt_ask_returns_result(self):
+        """Test ask returns the result from render."""
         theme = Theme()
         console = MagicMock(spec=Console)
-        mock_rich_prompt.ask.return_value = "user input"
 
-        prompt = Prompt(theme, "Enter name", console, default="John")
-        result = prompt.ask()
+        prompt = Prompt(theme, "Enter name")
 
-        assert result == "user input"
-        mock_rich_prompt.ask.assert_called_once_with(
-            f"{theme.icons.info} Enter name",
-            console=console,
-            default="John"
-        )
+        with patch('rich.prompt.Prompt.ask') as mock_ask:
+            mock_ask.return_value = "John Doe"
+            prompt.render(console)
+            result = prompt.ask()
+
+            assert result == "John Doe"
 
 
 class TestConfirm:
@@ -57,41 +57,41 @@ class TestConfirm:
     def test_confirm_init(self):
         """Test Confirm initialization."""
         theme = Theme()
-        console = MagicMock(spec=Console)
 
-        confirm = Confirm(theme, "Continue?", console, default=True)
+        confirm = Confirm(theme, "Are you sure?", default=True)
 
-        assert confirm.text == "Continue?"
-        assert confirm.console is console
+        assert confirm.text == "Are you sure?"
         assert confirm.kwargs == {"default": True}
 
-    def test_confirm_render_does_nothing(self):
-        """Test that render method does nothing."""
+    def test_confirm_render_asks_for_confirmation(self):
+        """Test that render method asks for confirmation."""
         theme = Theme()
         console = MagicMock(spec=Console)
 
-        confirm = Confirm(theme, "Continue?", console)
-        confirm.render(console)
+        confirm = Confirm(theme, "Continue?")
 
-        # Should not call console
-        console.print.assert_not_called()
+        with patch('rich.prompt.Confirm.ask') as mock_ask:
+            mock_ask.return_value = True
+            confirm.render(console)
 
-    @patch('clicycle.components.prompt.RichConfirm')
-    def test_confirm_ask(self, mock_rich_confirm):
-        """Test asking for confirmation."""
+            assert confirm.result is True
+            mock_ask.assert_called_once_with(
+                "Continue?", console=console
+            )
+
+    def test_confirm_ask_returns_result(self):
+        """Test ask returns the result from render."""
         theme = Theme()
         console = MagicMock(spec=Console)
-        mock_rich_confirm.ask.return_value = True
 
-        confirm = Confirm(theme, "Continue?", console, default=False)
-        result = confirm.ask()
+        confirm = Confirm(theme, "Continue?")
 
-        assert result is True
-        mock_rich_confirm.ask.assert_called_once_with(
-            f"{theme.icons.warning} Continue?",
-            console=console,
-            default=False
-        )
+        with patch('rich.prompt.Confirm.ask') as mock_ask:
+            mock_ask.return_value = False
+            confirm.render(console)
+            result = confirm.ask()
+
+            assert result is False
 
 
 class TestSelectList:
@@ -100,132 +100,120 @@ class TestSelectList:
     def test_selectlist_init(self):
         """Test SelectList initialization."""
         theme = Theme()
-        console = MagicMock(spec=Console)
-        options = ["Option A", "Option B", "Option C"]
+        options = ["opt1", "opt2", "opt3"]
 
-        select = SelectList(theme, "option", options, console, default="Option B")
+        select_list = SelectList(
+            theme,
+            "item",
+            options,
+            default="opt2"
+        )
 
-        assert select.item_name == "option"
-        assert select.options == options
-        assert select.console is console
-        assert select.default == "Option B"
+        assert select_list.item_name == "item"
+        assert select_list.options == options
+        assert select_list.default == "opt2"
 
     def test_selectlist_render(self):
         """Test rendering the options list."""
         theme = Theme()
         console = MagicMock(spec=Console)
-        options = ["Red", "Green", "Blue"]
+        options = ["opt1", "opt2"]
 
-        select = SelectList(theme, "color", options, console)
-        select.render(console)
+        select_list = SelectList(theme, "item", options)
 
-        # Should print header and all options
-        calls = console.print.call_args_list
-        assert len(calls) == 4  # Header + 3 options
+        with patch('rich.prompt.Prompt.ask') as mock_ask:
+            mock_ask.return_value = "1"
+            select_list.render(console)
 
-        # Check header
-        assert f"{theme.icons.info} Available colors:" in str(calls[0])
+            # Check that options were printed
+            console.print.assert_any_call("Available items:")
+            console.print.assert_any_call("  1. opt1")
+            console.print.assert_any_call("  2. opt2")
 
-        # Check options
-        assert "1. Red" in str(calls[1])
-        assert "2. Green" in str(calls[2])
-        assert "3. Blue" in str(calls[3])
+            # Check result
+            assert select_list.result == "opt1"
 
-    @patch('clicycle.components.prompt.RichPrompt')
-    def test_selectlist_ask_valid_choice(self, mock_rich_prompt):
-        """Test asking for a valid selection."""
+    def test_selectlist_ask_returns_result(self):
+        """Test ask returns the result from render."""
         theme = Theme()
         console = MagicMock(spec=Console)
-        options = ["Red", "Green", "Blue"]
-        mock_rich_prompt.ask.return_value = "2"
+        options = ["opt1", "opt2", "opt3"]
 
-        select = SelectList(theme, "color", options, console)
-        result = select.ask()
+        select_list = SelectList(theme, "item", options)
 
-        assert result == "Green"
-        mock_rich_prompt.ask.assert_called_once_with(
-            f"{theme.icons.info} Select a color",
-            console=console,
-            default=None
-        )
+        with patch('rich.prompt.Prompt.ask') as mock_ask:
+            mock_ask.return_value = "2"
+            select_list.render(console)
+            result = select_list.ask()
 
-    @patch('clicycle.components.prompt.RichPrompt')
-    def test_selectlist_ask_with_default(self, mock_rich_prompt):
-        """Test asking with a default option."""
+            assert result == "opt2"
+
+    def test_selectlist_with_default(self):
+        """Test select list with default value."""
         theme = Theme()
         console = MagicMock(spec=Console)
-        options = ["Red", "Green", "Blue"]
-        mock_rich_prompt.ask.return_value = "3"
+        options = ["opt1", "opt2", "opt3"]
 
-        select = SelectList(theme, "color", options, console, default="Blue")
-        result = select.ask()
+        select_list = SelectList(theme, "item", options, default="opt2")
 
-        assert result == "Blue"
-        # Should show default index (3)
-        mock_rich_prompt.ask.assert_called_once_with(
-            f"{theme.icons.info} Select a color (default: 3)",
-            console=console,
-            default='3'
-        )
+        with patch('rich.prompt.Prompt.ask') as mock_ask:
+            mock_ask.return_value = "2"
+            select_list.render(console)
 
-    @patch('clicycle.components.prompt.RichPrompt')
-    def test_selectlist_ask_invalid_choice_too_high(self, mock_rich_prompt):
-        """Test invalid selection - number too high."""
+            # Check that default was included in prompt
+            mock_ask.assert_called_once_with(
+                "Select a item (default: 2)",
+                console=console,
+                default="2"
+            )
+
+    def test_selectlist_invalid_choice_raises(self):
+        """Test invalid choice raises ValueError."""
         theme = Theme()
         console = MagicMock(spec=Console)
-        options = ["Red", "Green", "Blue"]
-        mock_rich_prompt.ask.return_value = "5"
+        options = ["opt1", "opt2"]
 
-        select = SelectList(theme, "color", options, console)
+        select_list = SelectList(theme, "item", options)
 
-        try:
-            select.ask()
-            raise AssertionError("Should have raised ValueError")
-        except ValueError as e:
-            assert "Invalid selection" in str(e)
-            assert "between 1 and 3" in str(e)
+        with patch('rich.prompt.Prompt.ask') as mock_ask:
+            mock_ask.return_value = "5"  # Invalid choice
 
-    @patch('clicycle.components.prompt.RichPrompt')
-    def test_selectlist_ask_invalid_choice_too_low(self, mock_rich_prompt):
-        """Test invalid selection - number too low."""
+            try:
+                select_list.render(console)
+                raise AssertionError("Should have raised ValueError")
+            except ValueError as e:
+                assert "Invalid selection" in str(e)
+
+    def test_selectlist_non_numeric_choice_raises(self):
+        """Test non-numeric choice raises ValueError."""
         theme = Theme()
         console = MagicMock(spec=Console)
-        options = ["Red", "Green", "Blue"]
-        mock_rich_prompt.ask.return_value = "0"
+        options = ["opt1", "opt2"]
 
-        select = SelectList(theme, "color", options, console)
+        select_list = SelectList(theme, "item", options)
 
-        try:
-            select.ask()
-            raise AssertionError("Should have raised ValueError")
-        except ValueError as e:
-            assert "Invalid selection" in str(e)
+        with patch('rich.prompt.Prompt.ask') as mock_ask:
+            mock_ask.return_value = "abc"  # Non-numeric
 
-    @patch('clicycle.components.prompt.RichPrompt')
-    def test_selectlist_ask_invalid_choice_not_number(self, mock_rich_prompt):
-        """Test invalid selection - not a number."""
+            try:
+                select_list.render(console)
+                raise AssertionError("Should have raised ValueError")
+            except ValueError as e:
+                assert "Invalid selection" in str(e)
+
+    def test_selectlist_edge_cases(self):
+        """Test edge cases for SelectList."""
         theme = Theme()
         console = MagicMock(spec=Console)
-        options = ["Red", "Green", "Blue"]
-        mock_rich_prompt.ask.return_value = "abc"
 
-        select = SelectList(theme, "color", options, console)
+        # Test with empty string
+        select_list = SelectList(theme, "item", ["opt1"])
 
-        try:
-            select.ask()
-            raise AssertionError("Should have raised ValueError")
-        except ValueError as e:
-            assert "Invalid selection" in str(e)
+        with patch('rich.prompt.Prompt.ask') as mock_ask:
+            mock_ask.return_value = None  # Empty input
 
-    @patch('clicycle.components.prompt.RichPrompt')
-    def test_selectlist_ask_edge_cases(self, mock_rich_prompt):
-        """Test edge cases for selection."""
-        theme = Theme()
-        console = MagicMock(spec=Console)
-        options = ["Only Option"]
-
-        # Test selecting the only option
-        mock_rich_prompt.ask.return_value = "1"
-        select = SelectList(theme, "item", options, console)
-        result = select.ask()
-        assert result == "Only Option"
+            try:
+                select_list.render(console)
+                raise AssertionError("Should have raised ValueError")
+            except ValueError:
+                pass  # Expected
