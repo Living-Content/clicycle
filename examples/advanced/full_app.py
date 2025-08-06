@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Complete showcase of all Clicycle components and features."""
 
+import sys
 import time
 
 from clicycle import Clicycle, Theme
@@ -16,20 +17,32 @@ from clicycle.components.text import Debug, Error, Info, ListItem, Success, Warn
 def showcase_text_components(cli):
     """Demonstrate all text component types."""
     cli.stream.render(Section(cli.theme, "Text Components"))
+    cli.stream.render(Debug(cli.theme, "[DEBUG] Starting text components demonstration"))
 
     cli.stream.render(Info(cli.theme, "This is an info message"))
+    cli.stream.render(Debug(cli.theme, "[DEBUG] Info messages use cyan color"))
+
     cli.stream.render(Success(cli.theme, "This is a success message"))
+    cli.stream.render(Debug(cli.theme, "[DEBUG] Success messages use green with checkmark icon"))
+
     cli.stream.render(WarningText(cli.theme, "This is a warning message"))
+    cli.stream.render(Debug(cli.theme, "[DEBUG] Warning messages use yellow with warning icon"))
+
     cli.stream.render(Error(cli.theme, "This is an error message"))
+    cli.stream.render(Debug(cli.theme, "[DEBUG] Error messages use red with X icon"))
+
     cli.stream.render(
         Debug(cli.theme, "This is a debug message (only shown in verbose mode)")
     )
+    cli.stream.render(Debug(cli.theme, "[DEBUG] Debug messages help trace program flow"))
 
     # List items
     cli.stream.render(Info(cli.theme, "Here's a list:"))
+    cli.stream.render(Debug(cli.theme, "[DEBUG] List items are indented by 2 spaces by default"))
     cli.stream.render(ListItem(cli.theme, "First item"))
     cli.stream.render(ListItem(cli.theme, "Second item"))
     cli.stream.render(ListItem(cli.theme, "Third item with a longer description"))
+    cli.stream.render(Debug(cli.theme, "[DEBUG] List items have no spacing between them"))
 
 
 def showcase_headers_sections(cli):
@@ -145,12 +158,18 @@ def showcase_spinners(cli):
     spinner_styles = ["dots", "line", "star", "bouncingBar"]
     cli.stream.render(Info(cli.theme, "Different spinner styles:"))
 
+    # Save original spinner type
+    original_spinner = cli.theme.spinner_type
+
     for style in spinner_styles:
         cli.theme.spinner_type = style
         spinner = Spinner(cli.theme, f"Testing {style} spinner...", cli.console)
         cli.stream.render(spinner)
         with spinner:
             time.sleep(1.5)
+
+    # Restore original spinner type
+    cli.theme.spinner_type = original_spinner
 
 
 def showcase_disappearing_spinners(cli):
@@ -260,8 +279,26 @@ def showcase_spacing_behavior(cli):
 
 def main():
     """Run the complete showcase."""
+    # Check for verbose flag
+    verbose = "--verbose" in sys.argv or "-v" in sys.argv
+
+    # Create a mock click context for Debug components to work
+    import click
+    from click.globals import push_context
+
+    ctx = click.Context(click.Command('demo'))
+    ctx.obj = {"verbose": verbose}
+    push_context(ctx)
+
     # Create CLI instance
     cli = Clicycle(app_name="Clicycle Showcase")
+
+    if verbose:
+        cli.stream.render(Info(cli.theme, "Running in VERBOSE mode - debug messages will be shown"))
+    else:
+        cli.stream.render(Info(cli.theme, "Running in NORMAL mode - debug messages hidden (use --verbose to see them)"))
+
+    cli.stream.render(Debug(cli.theme, "[DEBUG] Application initialized"))
 
     # Run all showcases
     showcase_headers_sections(cli)

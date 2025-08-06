@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.5] - 2025-08-06
+
+**Fixed:**
+
+- Debug components no longer affect spacing when not rendered (verbose mode off)
+- Fixed spinner style persistence issue in full_app.py example
+
+**Added:**
+
+- Verbose mode example (full_app_verbose.py) to demonstrate debug messages
+- Comprehensive debug documentation in README
+- More debug messages throughout full_app.py for better demonstration
+
 ## [2.2.4] - 2025-08-06
 
 **Fixed:**

@@ -105,6 +105,37 @@ cc.theme.icons.success = "✅"
 cc.clear()  # Clear screen
 ```
 
+## Debug Messages and Verbose Mode
+
+Debug messages are hidden by default and only shown when verbose mode is enabled.
+
+### With Click
+
+```python
+@click.command()
+@click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
+@click.pass_context
+def main(ctx, verbose):
+    ctx.ensure_object(dict)
+    ctx.obj['verbose'] = verbose
+    
+    cc.debug("This only appears with --verbose")
+    cc.info("This always appears")
+```
+
+### Without Click
+
+```python
+from click.globals import push_context
+
+verbose = '--verbose' in sys.argv
+ctx = click.Context(click.Command('app'))
+ctx.obj = {'verbose': verbose}
+push_context(ctx)
+
+cc.debug("Verbose mode message")
+```
+
 ## Themes
 
 Create custom themes to control appearance:
