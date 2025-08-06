@@ -81,6 +81,22 @@ with cc.progress("Downloading files") as prog:
         time.sleep(0.02)
 cc.success("Download complete!")
 
+# Multi-task progress
+cc.info("Multi-task progress (concurrent tasks):")
+with cc.multi_progress("Processing multiple tasks") as progress:
+    task1 = progress.add_task("[cyan]Download", total=100, short_id="DL")
+    task2 = progress.add_task("[green]Process", total=80, short_id="PR")
+    task3 = progress.add_task("[yellow]Upload", total=60, short_id="UP")
+
+    for i in range(100):
+        progress.update(task1, advance=1)
+        if i >= 20:
+            progress.update(task2, advance=1)
+        if i >= 40:
+            progress.update(task3, advance=1)
+        time.sleep(0.02)
+cc.success("All tasks complete!")
+
 # Spacing demonstration
 cc.section("Automatic Spacing")
 cc.info("Components manage their own spacing.")
@@ -88,6 +104,16 @@ cc.info("Notice: no space between consecutive info messages.")
 cc.info("This creates a clean, grouped appearance.")
 cc.success("But different component types have appropriate spacing.")
 cc.error("This error has space before it.")
+
+# Group demonstration - components without spacing
+cc.section("Grouped Content")
+cc.info("Using group() to combine components without spacing:")
+with cc.group():
+    cc.info("These components")
+    cc.success("are grouped together")
+    cc.warning("without the usual")
+    cc.error("spacing between them")
+cc.info("This is outside the group and has normal spacing.")
 
 # Clear example (commented out to not clear the demo)
 # cc.clear()  # Would clear the screen

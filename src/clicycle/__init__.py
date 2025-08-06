@@ -18,7 +18,7 @@ from clicycle.theme import (
     Typography,
 )
 
-__version__ = "2.0.2"
+__version__ = "2.1.0"
 
 # Core exports
 __all__ = [
@@ -147,6 +147,26 @@ class _ModuleInterface(ModuleType):
 
             setattr(self, name, interactive_multi_select)
             return interactive_multi_select
+
+        # Special handling for multi_progress that returns Progress object
+        if name == "multi_progress":
+            from clicycle.components.multi_progress import MultiProgress
+
+            def multi_progress_wrapper(description: str = "Processing") -> Any:
+                obj = MultiProgress(self._cli.theme, description, self._cli.console)
+                self._cli.stream.render(obj)
+                return obj
+
+            setattr(self, name, multi_progress_wrapper)
+            return multi_progress_wrapper
+
+        # Group context manager
+        if name == "group":
+            def group_wrapper() -> Any:
+                return self._cli.group()
+
+            setattr(self, name, group_wrapper)
+            return group_wrapper
 
         return sentinel
 

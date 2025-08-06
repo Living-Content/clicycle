@@ -65,11 +65,26 @@ with cc.spinner("Loading..."):
 
 with cc.progress("Processing") as prog:
     for i in range(100):
-        prog.update(i)
+        prog.update(i, f"Item {i}")
+
+# Multi-task progress tracking
+with cc.multi_progress("Processing tasks") as progress:
+    task1 = progress.add_task("Download", total=100)
+    task2 = progress.add_task("Process", total=100)
+    
+    for i in range(100):
+        progress.update(task1, advance=1)
+        progress.update(task2, advance=1)
 
 # Interactive components (with automatic fallback)
 selected = cc.select("Choose an option", ["Option 1", "Option 2", "Option 3"])
 selected_many = cc.multi_select("Select features", ["Auth", "API", "Cache", "Queue"])
+
+# Group components without spacing
+with cc.group():
+    cc.info("These lines")
+    cc.success("appear together")
+    cc.warning("without spacing")
 ```
 
 ### Configuration
