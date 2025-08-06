@@ -1,7 +1,6 @@
 """Tests for the module interface and convenience API."""
 
 import sys
-from types import ModuleType
 from unittest.mock import MagicMock, patch
 
 import clicycle as cc
@@ -265,7 +264,7 @@ class TestModuleInterface:
         # Just test that calling it again doesn't break
         result = _initialize_module_interface()
         assert isinstance(result, bool)  # Should return True or False
-        
+
         # Verify that the module has the expected methods
         assert hasattr(cc, 'header')
         assert hasattr(cc, 'info')
