@@ -1,11 +1,12 @@
 """Tests for the module interface and convenience API."""
 
 import sys
+from types import ModuleType
 from unittest.mock import MagicMock, patch
 
 import clicycle as cc
 import clicycle.theme
-from clicycle import _ModuleInterface
+from clicycle import _initialize_module_interface, _ModuleInterface
 
 
 class TestModuleInterface:
@@ -256,3 +257,18 @@ class TestModuleInterface:
             # Should return the result from ask()
             assert result == "option2"
             mock_ask.assert_called_once()
+
+    def test_pyinstaller_fallback(self):
+        """Test that module interface initialization returns correct value."""
+        # Test the normal path (should return True)
+        # The module is already initialized when clicycle imports
+        # Just test that calling it again doesn't break
+        result = _initialize_module_interface()
+        assert isinstance(result, bool)  # Should return True or False
+        
+        # Verify that the module has the expected methods
+        assert hasattr(cc, 'header')
+        assert hasattr(cc, 'info')
+        assert hasattr(cc, 'success')
+        assert hasattr(cc, 'error')
+

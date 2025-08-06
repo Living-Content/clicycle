@@ -18,7 +18,7 @@ from clicycle.theme import (
     Typography,
 )
 
-__version__ = "3.1.0"
+__version__ = "3.1.1"
 
 # Core exports
 __all__ = [
@@ -231,4 +231,26 @@ class _ModuleInterface(ModuleType):
 
 
 # Replace this module with our wrapper
-sys.modules[__name__] = _ModuleInterface(sys.modules[__name__])
+# Handle PyInstaller frozen environments
+def _initialize_module_interface() -> bool:
+    """Initialize the module interface, handling frozen environments."""
+    try:
+        # Try normal module replacement
+        interface = _ModuleInterface(sys.modules[__name__])
+        sys.modules[__name__] = interface
+        return True
+    except Exception:
+        # In frozen environments, the replacement might fail
+        # Set up the interface manually by adding methods to current module
+        current_module = sys.modules[__name__]
+        interface = _ModuleInterface(current_module)
+        
+        # Copy all interface methods to current module
+        for attr_name in dir(interface):
+            if not attr_name.startswith('_'):
+                setattr(current_module, attr_name, getattr(interface, attr_name))
+        
+        return False
+
+# Initialize the interface
+_initialize_module_interface()

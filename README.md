@@ -274,6 +274,10 @@ cc.success("Complete!")
 cc.table([{"Name": "Alice", "Score": 95}, {"Name": "Bob", "Score": 87}])
 ```
 
+## Bundling with PyInstaller
+
+See [docs/PYINSTALLER.md](docs/PYINSTALLER.md) for instructions on bundling Clicycle apps with PyInstaller.
+
 ## Coming Soon
 
 ### v3.2 - Theme Presets
