@@ -18,7 +18,7 @@ from clicycle.theme import (
     Typography,
 )
 
-__version__ = "2.2.5"
+__version__ = "3.0.0"
 
 # Core exports
 __all__ = [
@@ -118,17 +118,6 @@ class _ModuleInterface(ModuleType):
                     kwargs["app_name"] = self._cli.app_name
 
                 obj = component_class(self._cli.theme, *args, **kwargs)
-
-                # Special handling for debug - check verbose BEFORE rendering
-                if name == "debug":
-                    try:
-                        import click
-                        ctx = click.get_current_context()
-                        if ctx.obj and isinstance(ctx.obj, dict) and not ctx.obj.get("verbose", False):
-                            return  # Don't even send to stream if not verbose
-                    except RuntimeError:
-                        return  # No click context, don't render
-
                 self._cli.stream.render(obj)
             wrapper = regular_wrapper
 

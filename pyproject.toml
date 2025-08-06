@@ -60,7 +60,7 @@ exclude = [
 [tool.ruff.lint]
 select = [
     "F",    # pyflakes
-    "E",    # pycodestyle errors
+    "E",    # pycodestyle errors (includes E402 for module level imports)
     "W",    # pycodestyle warnings
     "I",    # isort
     "B",    # flake8-bugbear
@@ -84,6 +84,7 @@ ignore = [
     "T201",  # print found (allow intentional CLI output)
     "S603",  # subprocess call without shell=True (if you use subprocess safely)
     "S607",  # starting process with partial executable path
+    # NOTE: E402 (module level import not at top) is NOT ignored - we want to catch inline imports
 ]
 
 [tool.ruff.lint.mccabe]

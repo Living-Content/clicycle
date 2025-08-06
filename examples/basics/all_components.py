@@ -14,7 +14,6 @@ cc.info("This is an info message - general information")
 cc.success("This is a success message - operation completed")
 cc.error("This is an error message - something went wrong")
 cc.warning("This is a warning message - be careful")
-cc.debug("This is a debug message - only shown in verbose mode")
 
 # List items
 cc.info("Here's a list of features:")

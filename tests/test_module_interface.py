@@ -1,8 +1,10 @@
 """Tests for the module interface and convenience API."""
 
+import sys
 from unittest.mock import MagicMock, patch
 
 import clicycle as cc
+import clicycle.theme
 from clicycle import _ModuleInterface
 
 
@@ -11,7 +13,6 @@ class TestModuleInterface:
 
     def test_module_replacement(self):
         """Test that the module is replaced with _ModuleInterface."""
-        import sys
         assert isinstance(sys.modules['clicycle'], _ModuleInterface)
 
     def test_original_attributes_preserved(self):
@@ -35,7 +36,6 @@ class TestModuleInterface:
         # Theme exists but it's the module, not the instance
         # The theme module was imported and is a module attribute
         assert hasattr(cc, 'theme')
-        import clicycle.theme
         assert cc.theme is clicycle.theme
 
         # To get the CLI's theme instance:
@@ -60,7 +60,6 @@ class TestModuleInterface:
 
     def test_component_discovery(self):
         """Test that components are discovered and cached."""
-        import sys
         interface = sys.modules['clicycle']
 
         # Clear cache to test discovery
@@ -193,37 +192,6 @@ class TestModuleInterface:
             component = mock_render.call_args[0][0]
             assert component.title == "Title2"
             assert component.app_name == "Override"  # Should use explicit, not configured
-
-    @patch('click.get_current_context')
-    def test_debug_respects_verbose(self, mock_get_context):
-        """Test debug component respects verbose mode."""
-        # Test when verbose is False
-        mock_ctx = MagicMock()
-        mock_ctx.obj = {"verbose": False}
-        mock_get_context.return_value = mock_ctx
-
-        with patch('clicycle.components.text.Text.render') as mock_text_render:
-            cc.debug("Debug message")
-            # Debug component should not call parent's render when not verbose
-            mock_text_render.assert_not_called()
-
-        # Test when verbose is True
-        mock_ctx.obj = {"verbose": True}
-
-        with patch('clicycle.components.text.Text.render') as mock_text_render:
-            cc.debug("Debug message in verbose")
-            # Should call parent's render when verbose
-            mock_text_render.assert_called_once()
-
-    @patch('click.get_current_context')
-    def test_debug_no_click_context(self, mock_get_context):
-        """Test debug when no click context exists."""
-        mock_get_context.side_effect = RuntimeError("No context")
-
-        with patch('clicycle.components.text.Text.render') as mock_text_render:
-            cc.debug("Debug without context")
-            # Should not render when no context
-            mock_text_render.assert_not_called()
 
     def test_prompt_function(self):
         """Test prompt function wrapper."""

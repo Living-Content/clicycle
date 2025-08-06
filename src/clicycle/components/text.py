@@ -85,30 +85,6 @@ class WarningText(Text):
         super().__init__(theme, message, "warning")
 
 
-class Debug(Text):
-    """Debug message component."""
-
-    component_type = "debug"
-
-    def __init__(self, theme: Theme, message: str):
-        super().__init__(theme, message, "debug")
-
-    def render(self, console: Console) -> None:
-        """Only render debug messages in verbose mode."""
-        # Check if we're in verbose mode using Click context
-        try:
-            import click
-            ctx = click.get_current_context()
-            if ctx.obj and isinstance(ctx.obj, dict) and not ctx.obj.get("verbose", False):
-                return  # Don't render if not verbose
-        except RuntimeError:
-            # No click context, don't render
-            return
-
-        # Render normally if verbose
-        super().render(console)
-
-
 class ListItem(Text):
     """List item component."""
 

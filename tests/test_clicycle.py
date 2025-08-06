@@ -1,6 +1,6 @@
 """Tests for the main Clicycle class."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from rich.console import Console
 
@@ -42,49 +42,3 @@ class TestClicycle:
         cli.console.clear.assert_called_once()
         cli.stream.clear_history.assert_called_once()
 
-    def test_is_verbose_no_context(self):
-        """Test verbose check when no Click context exists."""
-        cli = Clicycle()
-
-        # Should return False when no context
-        assert cli.is_verbose is False
-
-    @patch("click.get_current_context")
-    def test_is_verbose_with_context(self, mock_get_context):
-        """Test verbose check with Click context."""
-        cli = Clicycle()
-
-        # Mock context with verbose=True
-        mock_context = MagicMock()
-        mock_context.obj = {"verbose": True}
-        mock_get_context.return_value = mock_context
-
-        assert cli.is_verbose is True
-
-        # Mock context with verbose=False
-        mock_context.obj = {"verbose": False}
-        assert cli.is_verbose is False
-
-        # Mock context with no obj
-        mock_context.obj = None
-        assert cli.is_verbose is False
-
-    @patch("click.get_current_context")
-    def test_is_verbose_with_non_dict_obj(self, mock_get_context):
-        """Test verbose check when obj is not a dict."""
-        cli = Clicycle()
-
-        mock_context = MagicMock()
-        mock_context.obj = "not a dict"
-        mock_get_context.return_value = mock_context
-
-        assert cli.is_verbose is False
-
-    @patch("click.get_current_context")
-    def test_is_verbose_runtime_error(self, mock_get_context):
-        """Test verbose check when get_current_context raises RuntimeError."""
-        cli = Clicycle()
-
-        mock_get_context.side_effect = RuntimeError("No context")
-
-        assert cli.is_verbose is False

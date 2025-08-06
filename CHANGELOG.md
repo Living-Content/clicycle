@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2025-08-06
+
+### BREAKING CHANGES
+
+**Removed:**
+- **Debug component removed** - Use Python's standard `logging` module instead
+- All `cc.debug()` functionality has been removed
+- Click context integration for verbose/debug mode removed
+
+### Changed
+
+- Debug messages now use Python's standard logging module
+- `--verbose` flag replaced with `--debug` in examples
+- No more inline imports throughout the codebase
+
+### Added
+
+- `py.typed` marker for better type checking support
+- E402 linting rule to catch inline imports
+
+### Fixed
+
+- Removed all inline imports that could cause circular dependencies
+- Fixed redundant icons in example files
+
+### Migration Guide
+
+Replace debug component usage:
+```python
+# Old (no longer works):
+cc.debug("Debug message")
+
+# New:
+import logging
+logger = logging.getLogger(__name__)
+logger.debug("Debug message")
+```
+
 ## [2.2.5] - 2025-08-06
 
 **Fixed:**

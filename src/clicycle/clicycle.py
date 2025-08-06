@@ -6,7 +6,6 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
-import click
 from rich.console import Console
 
 from clicycle.rendering.stream import RenderStream
@@ -30,16 +29,6 @@ class Clicycle:
         self.console.clear()
         self.stream.clear_history()
 
-    @property
-    def is_verbose(self) -> bool:
-        """Check if verbose mode is enabled."""
-        try:
-            ctx = click.get_current_context()
-            if ctx.obj and isinstance(ctx.obj, dict):
-                return bool(ctx.obj.get("verbose", False))
-            return False
-        except RuntimeError:
-            return False
 
     @contextmanager
     def group(self) -> Iterator[Clicycle]:
