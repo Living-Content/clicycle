@@ -274,6 +274,20 @@ cc.success("Complete!")
 cc.table([{"Name": "Alice", "Score": 95}, {"Name": "Bob", "Score": 87}])
 ```
 
+## Coming Soon
+
+### v3.2 - Theme Presets
+
+- **DefaultTheme**: Balanced, professional appearance
+- **CompactTheme**: Minimal spacing for dense output
+- **ColorfulTheme**: Vibrant colors and icons
+- **MonochromeTheme**: No colors, perfect for logs
+
+### v3.3 - Enhanced Components
+
+- **Panel/Card Component**: Boxed content with borders and padding
+- **Tree Component**: Hierarchical data display (file trees, org charts)
+
 ## License
 
 MIT License - see LICENSE file for details.

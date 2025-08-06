@@ -16,7 +16,24 @@ from clicycle.theme import Theme
 
 
 class Spinner(Component):
-    """Spinner component that manages its own lifecycle."""
+    """Animated spinner component for indicating ongoing operations.
+
+    Shows an animated spinner with a message during long-running operations.
+    Can be configured to disappear after completion (transient) or remain visible.
+    Must be used as a context manager to manage lifecycle properly.
+
+    Args:
+        theme: Theme configuration including spinner type and disappearing behavior
+        message: Status message to display alongside the spinner
+        console: Rich console instance for rendering
+
+    Example:
+        >>> import clicycle as cc
+        >>> with cc.spinner("Loading data..."):
+        ...     # Perform long operation
+        ...     time.sleep(2)
+        >>> # Spinner disappears after context exits (if theme.disappearing_spinners=True)
+    """
 
     component_type = "spinner"
     deferred_render = True  # Don't render immediately, wait for context manager
@@ -39,7 +56,11 @@ class Spinner(Component):
         pass
 
     def __enter__(self) -> Spinner:
-        """Context manager entry - start the spinner."""
+        """Start the spinner animation when entering context.
+
+        Returns:
+            Self for context manager usage
+        """
         # Apply spacing BEFORE the spinner starts
         spacing = self.get_spacing_before()
         if spacing > 0:
@@ -77,7 +98,16 @@ class Spinner(Component):
         return self
 
     def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> Literal[False]:
-        """Context manager exit - stop the spinner."""
+        """Stop the spinner animation when exiting context.
+
+        Args:
+            exc_type: Exception type if an error occurred
+            exc_val: Exception value if an error occurred
+            exc_tb: Exception traceback if an error occurred
+
+        Returns:
+            False to propagate any exceptions
+        """
         if self._context:
             self._context.__exit__(exc_type, exc_val, exc_tb)
 

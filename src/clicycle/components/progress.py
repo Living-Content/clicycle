@@ -21,7 +21,24 @@ from clicycle.theme import Theme
 
 
 class ProgressBar(Component):
-    """Progress bar component - indicates ongoing operation with progress."""
+    """Progress bar component for tracking operation completion.
+
+    Displays a visual progress bar with percentage completion.
+    Must be used as a context manager and updated with progress values.
+    The progress bar remains visible after completion (non-transient).
+
+    Args:
+        theme: Theme configuration for styling
+        description: Initial description of the operation
+        console: Rich console instance for rendering
+
+    Example:
+        >>> import clicycle as cc
+        >>> with cc.progress("Processing files") as progress:
+        ...     for i in range(100):
+        ...         progress.update(i, f"File {i}/100")
+        ...         time.sleep(0.01)
+    """
 
     component_type = "progress"
     deferred_render = True  # Don't render immediately, wait for context manager
@@ -71,7 +88,12 @@ class ProgressBar(Component):
             self._task_id = None
 
     def update(self, percent: float, message: str | None = None) -> None:
-        """Update progress bar."""
+        """Update progress bar completion and optional message.
+
+        Args:
+            percent: Completion percentage (0-100)
+            message: Optional status message to display
+        """
         if self._progress and self._task_id is not None:
             if message:
                 self._progress.update(self._task_id, description=message)

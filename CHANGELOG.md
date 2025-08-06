@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2025-08-06
+
+### Added
+
+- **Performance Optimizations:**
+  - Console instance caching for improved performance
+  - Render history limiting (default 100 components) to prevent memory growth
+  - Smart rendering pipeline optimizations
+
+- **Input Validation:**
+  - Text components now validate string inputs (TypeError for non-strings)
+  - Empty string validation (ValueError for empty messages)
+  - Theme parameter validation (width >= 20, valid spinner types)
+  - Clear error messages for better developer experience
+
+- **API Documentation:**
+  - Comprehensive docstrings for all major components
+  - Usage examples in docstrings
+  - Parameter descriptions and type hints
+  - Return value documentation
+
+- **New Features:**
+  - Validation example demonstrating error handling
+  - "Coming Soon" roadmap in README
+
+### Fixed
+
+- Pytest coverage warning "module was previously imported but not measured"
+- Trailing whitespace in docstrings (W293 linting issues)
+
+### Changed
+
+- Coverage path in pytest configuration from `--cov=clicycle` to `--cov=src/clicycle`
+- Validation example now uses `contextlib.suppress` for cleaner code
+
 ## [3.0.0] - 2025-08-06
 
 ### BREAKING CHANGES

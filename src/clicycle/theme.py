@@ -9,7 +9,19 @@ from rich import box as rich_box
 
 @dataclass
 class Icons:
-    """Icon set for CLI - clean text symbols instead of emojis."""
+    """Icon configuration for CLI components.
+
+    Defines the icons used throughout the CLI for various purposes.
+    Uses Unicode symbols for broad terminal compatibility.
+
+    Attributes:
+        success: Checkmark for successful operations (✔)
+        error: X mark for errors (✖)
+        warning: Warning triangle for cautions (⚠)
+        info: Information symbol (ℹ)
+        running: Arrow for ongoing operations (→)
+        bullet: Bullet point for lists (•)
+    """
 
     # Core status icons
     success: str = "✔"
@@ -48,7 +60,19 @@ class Icons:
 
 @dataclass
 class Typography:
-    """Typography styles for different text elements."""
+    """Typography configuration for text styling.
+
+    Controls colors, styles, and text transformations for all components.
+    Uses Rich markup syntax for styling.
+
+    Attributes:
+        header_style: Style for main headers (default: "bold white")
+        header_transform: Text transform for headers - "upper", "lower", "title", "none"
+        success_style: Green styling for success messages
+        error_style: Red styling for error messages
+        warning_style: Yellow styling for warnings
+        info_style: Cyan styling for info messages
+    """
 
     # Headers
     header_style: str = "bold white"
@@ -92,7 +116,16 @@ class Layout:
 
 @dataclass
 class ComponentSpacing:
-    """Spacing rules for components - defaults to 1, only specify exceptions."""
+    """Spacing rules between consecutive components.
+
+    Defines how many blank lines appear between different component types.
+    Default spacing is 1 line. Only exceptions need to be specified.
+    Uses a dictionary mapping previous component type to spacing.
+
+    Example:
+        info: {"info": 0}  # No spacing between consecutive info messages
+        list_item: {"list_item": 0}  # No spacing between list items
+    """
 
     info: dict[str, int] = field(default_factory=lambda: {"info": 0})
     debug: dict[str, int] = field(default_factory=lambda: {"debug": 0})
@@ -113,7 +146,15 @@ class ComponentSpacing:
 
 @dataclass
 class ComponentIndentation:
-    """Indentation rules for components - number of spaces per text type."""
+    """Indentation configuration for text components.
+
+    Controls the number of spaces used to indent different text types.
+    Useful for creating visual hierarchy in output.
+
+    Attributes:
+        info: Spaces before info messages (default: 0)
+        list_item: Spaces before list items (default: 2)
+    """
 
     info: int = 0
     success: int = 0
@@ -125,7 +166,32 @@ class ComponentIndentation:
 
 @dataclass
 class Theme:
-    """Complete theme configuration."""
+    """Complete theme configuration for Clicycle.
+
+    The central configuration object that controls all visual aspects
+    of the CLI output including colors, spacing, icons, and behavior.
+
+    Args:
+        icons: Icon set configuration
+        typography: Text styling configuration
+        layout: Layout configuration for tables and display
+        spacing: Rules for spacing between components
+        indentation: Rules for component indentation
+        width: Console width in characters (must be >= 20)
+        disappearing_spinners: Whether spinners vanish after completion
+        spinner_type: Animation style ("dots", "line", "bouncingBar", etc.)
+
+    Raises:
+        ValueError: If width < 20 or invalid spinner_type
+
+    Example:
+        >>> from clicycle import Theme
+        >>> theme = Theme(
+        ...     width=120,
+        ...     disappearing_spinners=True,
+        ...     spinner_type="dots2"
+        ... )
+    """
 
     icons: Icons = field(default_factory=Icons)
     typography: Typography = field(default_factory=Typography)
@@ -147,7 +213,17 @@ class Theme:
     _style_cache: dict[str, str] = field(default_factory=dict, init=False, repr=False)
 
     def __post_init__(self) -> None:
-        """Pre-compute and cache frequently used style combinations."""
+        """Validate theme and pre-compute cached styles."""
+        # Validate width
+        if not isinstance(self.width, int) or self.width < 20:
+            raise ValueError(f"Width must be an integer >= 20, got {self.width}")
+
+        # Validate spinner type
+        valid_spinners = {"dots", "dots2", "dots3", "line", "star", "bouncingBar", "arc", "arrow"}
+        if self.spinner_type not in valid_spinners:
+            raise ValueError(f"Invalid spinner type '{self.spinner_type}'. Must be one of: {', '.join(valid_spinners)}")
+
+        # Pre-compute and cache frequently used style combinations
         self._style_cache.update(
             {
                 "info_icon": f"{self.icons.info} ",
@@ -160,7 +236,15 @@ class Theme:
         )
 
     def transform_text(self, text: str, transform: str) -> str:
-        """Apply text transformation."""
+        """Apply text transformation based on theme settings.
+
+        Args:
+            text: Text to transform
+            transform: Transformation type - "upper", "lower", "title", or "none"
+
+        Returns:
+            Transformed text string
+        """
         if transform == "upper":
             return text.upper()
         if transform == "lower":

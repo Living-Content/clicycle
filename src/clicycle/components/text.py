@@ -9,16 +9,42 @@ from clicycle.theme import Theme
 
 
 class Text(Component):
-    """Base text component for messages."""
+    """Base text component with automatic spacing and theming.
+
+    The foundation for all text-based components. Handles message display with
+    theme-based styling, icons, and automatic spacing between components.
+
+    Args:
+        theme: Theme configuration for styling and spacing
+        message: Text content to display (must be non-empty string)
+        text_type: Style variant - 'info', 'success', 'error', 'warning', or 'list_item'
+
+    Raises:
+        TypeError: If message is not a string
+        ValueError: If message is empty
+
+    Example:
+        >>> from clicycle import Clicycle, Theme
+        >>> cli = Clicycle()
+        >>> text = Text(cli.theme, "Processing data...", "info")
+    """
 
     def __init__(self, theme: Theme, message: str, text_type: str = "info"):
         super().__init__(theme)
+        if not isinstance(message, str):
+            raise TypeError(f"Message must be a string, got {type(message).__name__}")
+        if not message:
+            raise ValueError("Message cannot be empty")
         self.message = message
         self.text_type = text_type
         self.component_type = text_type  # For spacing rules
 
     def render(self, console: Console) -> None:
-        """Render the text message with appropriate icon and style."""
+        """Render the text message with appropriate icon and style.
+
+        Args:
+            console: Rich console instance for rendering
+        """
         icon_map = {
             "info": self.theme.icons.info,
             "success": self.theme.icons.success,
@@ -50,7 +76,20 @@ class Text(Component):
 
 
 class Info(Text):
-    """Info message component."""
+    """Informational message component.
+
+    Displays general information messages with standard styling.
+    Typically used for status updates, instructions, or neutral information.
+
+    Args:
+        theme: Theme configuration for styling and spacing
+        message: Information text to display
+
+    Example:
+        >>> import clicycle as cc
+        >>> cc.info("Processing 1000 records...")
+        >>> cc.info("Connected to database")
+    """
 
     component_type = "info"
 
@@ -59,7 +98,20 @@ class Info(Text):
 
 
 class Success(Text):
-    """Success message component."""
+    """Success message component with checkmark icon.
+
+    Displays success messages with green styling and a checkmark icon.
+    Used to indicate successful operations, completions, or positive outcomes.
+
+    Args:
+        theme: Theme configuration for styling and spacing
+        message: Success message to display (icon added automatically)
+
+    Example:
+        >>> import clicycle as cc
+        >>> cc.success("Database migration completed")
+        >>> cc.success("All tests passed")
+    """
 
     component_type = "success"
 
@@ -68,7 +120,20 @@ class Success(Text):
 
 
 class Error(Text):
-    """Error message component."""
+    """Error message component with X icon.
+
+    Displays error messages with red styling and an error icon.
+    Used to indicate failures, errors, or problems that need attention.
+
+    Args:
+        theme: Theme configuration for styling and spacing
+        message: Error message to display (icon added automatically)
+
+    Example:
+        >>> import clicycle as cc
+        >>> cc.error("Failed to connect to server")
+        >>> cc.error("Invalid configuration file")
+    """
 
     component_type = "error"
 
@@ -77,7 +142,20 @@ class Error(Text):
 
 
 class WarningText(Text):
-    """Warning message component."""
+    """Warning message component with warning icon.
+
+    Displays warning messages with yellow/orange styling and a warning icon.
+    Used for cautions, deprecations, or important notices that aren't errors.
+
+    Args:
+        theme: Theme configuration for styling and spacing
+        message: Warning message to display (icon added automatically)
+
+    Example:
+        >>> import clicycle as cc
+        >>> cc.warning("Deprecation: This feature will be removed in v4.0")
+        >>> cc.warning("Low disk space available")
+    """
 
     component_type = "warning"
 
@@ -86,7 +164,21 @@ class WarningText(Text):
 
 
 class ListItem(Text):
-    """List item component."""
+    """List item component with bullet point.
+
+    Displays text as a list item with automatic bullet point and indentation.
+    Multiple list items rendered consecutively create a formatted list.
+
+    Args:
+        theme: Theme configuration for styling and spacing
+        message: List item text to display (bullet added automatically)
+
+    Example:
+        >>> import clicycle as cc
+        >>> cc.list_item("First step: Install dependencies")
+        >>> cc.list_item("Second step: Configure settings")
+        >>> cc.list_item("Third step: Run the application")
+    """
 
     component_type = "list_item"
 
