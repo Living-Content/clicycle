@@ -43,6 +43,9 @@ jobs:
   publish:
     needs: build
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/clicycle/
     
     steps:
     - name: Download artifacts
