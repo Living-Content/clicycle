@@ -56,13 +56,13 @@ cc.json(config, title="Application Config")
 
 # Table data
 cc.table(
-    headers=["Metric", "Value"],
-    rows=[
-        ["Total Users", "1250"],
-        ["Active Sessions", "342"],
-        ["CPU Usage", "45%"],
-        ["Memory", "2.1 GB"],
-    ]
+    [
+        {"Metric": "Total Users", "Value": "1250"},
+        {"Metric": "Active Sessions", "Value": "342"},
+        {"Metric": "CPU Usage", "Value": "45%"},
+        {"Metric": "Memory", "Value": "2.1 GB"},
+    ],
+    title="System Metrics"
 )
 
 # Progress indicators
