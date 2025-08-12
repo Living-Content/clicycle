@@ -1,3 +1,4 @@
+<!-- markdownlint-configure-file {"MD024": { "siblings_only": true, "allow_different_nesting": true }} -->
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -65,12 +66,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2025-08-06
 
-### BREAKING CHANGES
+### Removed
 
-**Removed:**
-- **Debug component removed** - Use Python's standard `logging` module instead
-- All `cc.debug()` functionality has been removed
-- Click context integration for verbose/debug mode removed
+- BREAKING: Debug component removed; use Python's standard `logging` module instead
+- BREAKING: Removed all `cc.debug()` functionality
+- BREAKING: Removed Click context integration for verbose/debug mode
 
 ### Changed
 
@@ -91,6 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Migration Guide
 
 Replace debug component usage:
+
 ```python
 # Old (no longer works):
 cc.debug("Debug message")
@@ -103,12 +104,12 @@ logger.debug("Debug message")
 
 ## [2.2.5] - 2025-08-06
 
-**Fixed:**
+### Fixed
 
 - Debug components no longer affect spacing when not rendered (verbose mode off)
 - Fixed spinner style persistence issue in full_app.py example
 
-**Added:**
+### Added
 
 - Verbose mode example (full_app_verbose.py) to demonstrate debug messages
 - Comprehensive debug documentation in README
@@ -116,64 +117,64 @@ logger.debug("Debug message")
 
 ## [2.2.4] - 2025-08-06
 
-**Fixed:**
+### Fixed
 
 - Fixed incorrect table usage in all_components.py example (was using non-existent headers/rows parameters)
 
 ## [2.2.3] - 2025-08-06
 
-**Fixed:**
+### Fixed
 
 - Removed all references to the removed summary component from examples
 - Replaced summary usage with simple info outputs
 
 ## [2.2.2] - 2025-08-06
 
-**Fixed:**
+### Fixed
 
 - Fixed whitespace linting issues in test files
 
 ## [2.2.1] - 2025-08-06
 
-**Fixed:**
+### Fixed
 
 - app_name now properly displays in headers when configured via `cc.configure(app_name="MyApp")` or `Clicycle(app_name="MyApp")`
 
 ## [2.2.0] - 2025-08-06
 
-**Added:**
+### Added
 
 - `prompt()`, `confirm()`, and `select_list()` functions for user input
 - Comprehensive integration tests for prompt components
 - Stream orchestrator tests achieving 100% coverage
 
-**Fixed:**
+### Fixed
 
 - Test architecture now properly tests clicycle wrappers instead of bypassing them
 - Improved test coverage to 96% overall
 
-**Changed:**
+### Changed
 
 - Refactored prompt components to use render() method consistently
 - Tests now validate the full clicycle flow rather than mocking internals
 
 ## [2.1.4] - 2025-08-06
 
-**Fixed:**
+### Fixed
 
 - Removed debug print statements that were accidentally left in v2.1.3
 
 ## [2.1.3] - 2025-08-06
 
-**Fixed:**
+### Fixed
 
 - Fixed blank line appearing between progress bar descriptions and actual progress bars
-- Fixed spacing issues for persistent (non-disappearing) spinners  
+- Fixed spacing issues for persistent (non-disappearing) spinners
 - Improved deferred rendering architecture for progress/spinner components
 - Fixed debug components interfering with live displays
 - Changed default `disappearing_spinners` to `False` for better UX
 
-**Changed:**
+### Changed
 
 - Introduced `deferred_render` flag for components that use context managers
 - Improved stream orchestration to handle live context transitions properly
@@ -181,7 +182,7 @@ logger.debug("Debug message")
 
 ## [2.1.2] - 2025-01-06
 
-**Fixed:**
+### Fixed
 
 - Actually includes the progress bar rendering fixes from v2.1.1 (v2.1.1 was released prematurely without the fixes)
 - Progress bar description now correctly appears on its own line above the bar
@@ -189,7 +190,7 @@ logger.debug("Debug message")
 
 ## [2.1.1] - 2025-01-06
 
-**Fixed:**
+### Fixed
 
 - Progress bar description now appears on its own line above the bar for better readability
 - Removed duplicate percentage display in progress bars
@@ -198,7 +199,7 @@ logger.debug("Debug message")
 
 ## [2.1.0] - 2025-01-06
 
-**Added:**
+### Added
 
 - `multi_progress()` context manager for tracking multiple concurrent tasks
 - `group()` context manager for rendering components without spacing (formerly `block()`)
@@ -206,27 +207,27 @@ logger.debug("Debug message")
 - Dedicated example for demonstrating group functionality (`examples/features/groups.py`)
 - Multi-task progress tracking in all_components example
 
-**Fixed:**
+### Fixed
 
 - Progress bar context manager now properly handles updates
 - Menu example no longer displays ANSI codes when arrow keys are pressed after "Press Enter to continue"
 - All linting issues resolved (ruff and mypy clean)
 
-**Changed:**
+### Changed
 
 - Refactored menu.py to reduce complexity by extracting helper functions
 - Improved code organization with separate `modifiers` directory
 
 ## [2.0.2] - 2025-01-05
 
-**Fixed:**
+### Fixed
 
 - Updated PyPI version badge to use shields.io instead of badge.fury.io for better reliability
 - Badge now correctly shows the latest PyPI version without caching delays
 
 ## [2.0.1] - 2025-01-05
 
-**Fixed:**
+### Fixed
 
 - Added comprehensive type annotations for mypy strict mode compliance
 - Fixed type compatibility issues in prompt and interactive components
@@ -234,13 +235,13 @@ logger.debug("Debug message")
 - Fixed module import approach in interactive components to avoid attribute errors
 - Ensured all components pass mypy strict mode checks
 
-**Changed:**
+### Changed
 
 - Updated test assertions to match new type annotation behavior
 
 ## [2.0.0] - 2025-01-05
 
-**Added:**
+### Added
 
 - Component-based architecture with automatic spacing management
 - Interactive components with arrow-key navigation (`select` and `multi_select`)
@@ -251,7 +252,7 @@ logger.debug("Debug message")
 - Full type hints throughout the codebase
 - Python 3.11+ support
 
-**Changed:**
+### Changed
 
 - Complete architectural refactor from monolithic to component-based design
 - Moved from class-based to function-based API for better ergonomics
@@ -260,14 +261,14 @@ logger.debug("Debug message")
 - Improved Rich integration with better theme customization
 - Updated minimum Python version from 3.10 to 3.11
 
-**Fixed:**
+### Fixed
 
 - Double messaging issue with spinners
 - Spacing issues between components
 - Interactive menu display issues across different terminals
 - Test coverage gaps and import errors
 
-**Removed:**
+### Removed
 
 - Legacy monolithic `core.py` module
 - Old class-based API (though Clicycle class still available for advanced use)
@@ -275,7 +276,7 @@ logger.debug("Debug message")
 
 ## [1.0.0] - 2024-12-12
 
-**Added:**
+### Added
 
 - Initial release
 - Basic CLI rendering with Rich styling
