@@ -41,6 +41,7 @@ class Code(Component):
             self.language,
             theme="monokai",
             line_numbers=self.line_numbers,
+            word_wrap=True,
         )
         console.print(syntax)
 

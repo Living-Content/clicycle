@@ -35,7 +35,7 @@ class TestProgressBar:
         # The description is printed in the track() context manager
         console.print.assert_not_called()
 
-    @patch('clicycle.components.progress.Progress')
+    @patch("clicycle.components.progress.Progress")
     def test_progressbar_context_manager(self, mock_progress_class):
         """Test ProgressBar as context manager."""
         theme = Theme()
@@ -107,7 +107,7 @@ class TestProgressBar:
         # Should not raise error
         pb.update(50.0, "Halfway")
 
-    @patch('clicycle.components.progress.Progress')
+    @patch("clicycle.components.progress.Progress")
     def test_progressbar_enter_exit(self, mock_progress_class):
         """Test __enter__ and __exit__ methods."""
         theme = Theme()

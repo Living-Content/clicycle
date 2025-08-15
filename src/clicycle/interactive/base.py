@@ -15,7 +15,9 @@ if TYPE_CHECKING:
 class _BaseRenderer(ABC):
     """Base class for interactive renderers that use raw terminal IO."""
 
-    def __init__(self, title: str, options: list[str | dict[str, Any]], cli: Clicycle) -> None:
+    def __init__(
+        self, title: str, options: list[str | dict[str, Any]], cli: Clicycle
+    ) -> None:
         self.title = title
         self.options = self._normalize_options(options)
         self.cli = cli

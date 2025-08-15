@@ -41,4 +41,3 @@ class TestClicycle:
 
         cli.console.clear.assert_called_once()
         cli.stream.clear_history.assert_called_once()
-

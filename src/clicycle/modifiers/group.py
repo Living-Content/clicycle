@@ -22,4 +22,3 @@ class Group(Component):
         # Render all components directly without spacing
         for component in self.components:
             component.render(console)
-

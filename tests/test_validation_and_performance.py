@@ -52,7 +52,16 @@ class TestThemeValidation:
 
     def test_valid_spinner_types(self):
         """Test that theme accepts valid spinner types."""
-        for spinner in ["dots", "dots2", "dots3", "line", "star", "bouncingBar", "arc", "arrow"]:
+        for spinner in [
+            "dots",
+            "dots2",
+            "dots3",
+            "line",
+            "star",
+            "bouncingBar",
+            "arc",
+            "arrow",
+        ]:
             theme = Theme(spinner_type=spinner)
             assert theme.spinner_type == spinner
 

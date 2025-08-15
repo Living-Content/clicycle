@@ -27,14 +27,12 @@ class TestPrompt:
 
         prompt = Prompt(theme, "Enter name")
 
-        with patch('rich.prompt.Prompt.ask') as mock_ask:
+        with patch("rich.prompt.Prompt.ask") as mock_ask:
             mock_ask.return_value = "test value"
             prompt.render(console)
 
             assert prompt.result == "test value"
-            mock_ask.assert_called_once_with(
-                "Enter name", console=console
-            )
+            mock_ask.assert_called_once_with("Enter name", console=console)
 
     def test_prompt_ask_returns_result(self):
         """Test ask returns the result from render."""
@@ -43,7 +41,7 @@ class TestPrompt:
 
         prompt = Prompt(theme, "Enter name")
 
-        with patch('rich.prompt.Prompt.ask') as mock_ask:
+        with patch("rich.prompt.Prompt.ask") as mock_ask:
             mock_ask.return_value = "John Doe"
             prompt.render(console)
             result = prompt.ask()
@@ -70,14 +68,12 @@ class TestConfirm:
 
         confirm = Confirm(theme, "Continue?")
 
-        with patch('rich.prompt.Confirm.ask') as mock_ask:
+        with patch("rich.prompt.Confirm.ask") as mock_ask:
             mock_ask.return_value = True
             confirm.render(console)
 
             assert confirm.result is True
-            mock_ask.assert_called_once_with(
-                "Continue?", console=console
-            )
+            mock_ask.assert_called_once_with("Continue?", console=console)
 
     def test_confirm_ask_returns_result(self):
         """Test ask returns the result from render."""
@@ -86,7 +82,7 @@ class TestConfirm:
 
         confirm = Confirm(theme, "Continue?")
 
-        with patch('rich.prompt.Confirm.ask') as mock_ask:
+        with patch("rich.prompt.Confirm.ask") as mock_ask:
             mock_ask.return_value = False
             confirm.render(console)
             result = confirm.ask()
@@ -102,12 +98,7 @@ class TestSelectList:
         theme = Theme()
         options = ["opt1", "opt2", "opt3"]
 
-        select_list = SelectList(
-            theme,
-            "item",
-            options,
-            default="opt2"
-        )
+        select_list = SelectList(theme, "item", options, default="opt2")
 
         assert select_list.item_name == "item"
         assert select_list.options == options
@@ -121,7 +112,7 @@ class TestSelectList:
 
         select_list = SelectList(theme, "item", options)
 
-        with patch('rich.prompt.Prompt.ask') as mock_ask:
+        with patch("rich.prompt.Prompt.ask") as mock_ask:
             mock_ask.return_value = "1"
             select_list.render(console)
 
@@ -141,7 +132,7 @@ class TestSelectList:
 
         select_list = SelectList(theme, "item", options)
 
-        with patch('rich.prompt.Prompt.ask') as mock_ask:
+        with patch("rich.prompt.Prompt.ask") as mock_ask:
             mock_ask.return_value = "2"
             select_list.render(console)
             result = select_list.ask()
@@ -156,15 +147,13 @@ class TestSelectList:
 
         select_list = SelectList(theme, "item", options, default="opt2")
 
-        with patch('rich.prompt.Prompt.ask') as mock_ask:
+        with patch("rich.prompt.Prompt.ask") as mock_ask:
             mock_ask.return_value = "2"
             select_list.render(console)
 
             # Check that default was included in prompt
             mock_ask.assert_called_once_with(
-                "Select a item (default: 2)",
-                console=console,
-                default="2"
+                "Select a item (default: 2)", console=console, default="2"
             )
 
     def test_selectlist_invalid_choice_raises(self):
@@ -175,7 +164,7 @@ class TestSelectList:
 
         select_list = SelectList(theme, "item", options)
 
-        with patch('rich.prompt.Prompt.ask') as mock_ask:
+        with patch("rich.prompt.Prompt.ask") as mock_ask:
             mock_ask.return_value = "5"  # Invalid choice
 
             try:
@@ -192,7 +181,7 @@ class TestSelectList:
 
         select_list = SelectList(theme, "item", options)
 
-        with patch('rich.prompt.Prompt.ask') as mock_ask:
+        with patch("rich.prompt.Prompt.ask") as mock_ask:
             mock_ask.return_value = "abc"  # Non-numeric
 
             try:
@@ -209,7 +198,7 @@ class TestSelectList:
         # Test with empty string
         select_list = SelectList(theme, "item", ["opt1"])
 
-        with patch('rich.prompt.Prompt.ask') as mock_ask:
+        with patch("rich.prompt.Prompt.ask") as mock_ask:
             mock_ask.return_value = None  # Empty input
 
             try:

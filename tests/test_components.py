@@ -267,10 +267,7 @@ class TestTable:
         theme = Theme()
         console = MagicMock(spec=Console)
 
-        data = [
-            {"name": "Alice", "age": 30},
-            {"name": "Bob", "age": 25}
-        ]
+        data = [{"name": "Alice", "age": 30}, {"name": "Bob", "age": 25}]
         table = Table(theme, data, title="Users")
         table.render(console)
 
@@ -389,5 +386,5 @@ class TestSpinner:
             console.status.assert_called_once_with(
                 "Loading...",
                 spinner=theme.spinner_type,
-                spinner_style=theme.typography.info_style
+                spinner_style=theme.typography.info_style,
             )

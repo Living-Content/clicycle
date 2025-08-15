@@ -127,10 +127,10 @@ def interactive_multi_select(
     max_selection: int | None = None,
 ) -> list[Any] | None:
     """Show an interactive multi-select menu with checkboxes."""
-    clicycle_module = sys.modules.get('clicycle')
+    clicycle_module = sys.modules.get("clicycle")
     if clicycle_module is None:
         raise RuntimeError("clicycle module not imported")
-    cli = getattr(clicycle_module, '_cli', None)
+    cli = getattr(clicycle_module, "_cli", None)
     if cli is None:
         raise RuntimeError("clicycle._cli not initialized")
     renderer = _MultiSelectRenderer(

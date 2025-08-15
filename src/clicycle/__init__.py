@@ -18,7 +18,7 @@ from clicycle.theme import (
     Typography,
 )
 
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 
 # Core exports
 __all__ = [
@@ -109,6 +109,7 @@ class _ModuleInterface(ModuleType):
                 obj = component_class(self._cli.theme, message, self._cli.console)
                 self._cli.stream.render(obj)
                 return obj
+
             wrapper = context_wrapper
         else:
             # Regular components
@@ -119,6 +120,7 @@ class _ModuleInterface(ModuleType):
 
                 obj = component_class(self._cli.theme, *args, **kwargs)
                 self._cli.stream.render(obj)
+
             wrapper = regular_wrapper
 
         wrapper.__name__ = name
@@ -162,10 +164,12 @@ class _ModuleInterface(ModuleType):
         """Handle interactive select functions."""
         if name == "select":
             from clicycle.interactive.select import interactive_select
+
             return interactive_select
 
         if name == "multi_select":
             from clicycle.interactive.multi_select import interactive_multi_select
+
             return interactive_multi_select
 
         return None
@@ -186,8 +190,10 @@ class _ModuleInterface(ModuleType):
     def _handle_group_function(self, name: str) -> Any:
         """Handle group context manager."""
         if name == "group":
+
             def group_wrapper() -> Any:
                 return self._cli.group()
+
             return group_wrapper
         return None
 
@@ -201,6 +207,7 @@ class _ModuleInterface(ModuleType):
                 # Input components go through stream for spacing
                 self._cli.stream.render(obj)
                 return obj.ask()
+
             return prompt_wrapper
 
         if name == "confirm":
@@ -211,6 +218,7 @@ class _ModuleInterface(ModuleType):
                 # Input components go through stream for spacing
                 self._cli.stream.render(obj)
                 return obj.ask()
+
             return confirm_wrapper
 
         if name == "select_list":
@@ -225,6 +233,7 @@ class _ModuleInterface(ModuleType):
                 # Go through the stream for proper spacing
                 self._cli.stream.render(obj)
                 return obj.ask()
+
             return select_list_wrapper
 
         return None
@@ -247,10 +256,11 @@ def _initialize_module_interface() -> bool:
 
         # Copy all interface methods to current module
         for attr_name in dir(interface):
-            if not attr_name.startswith('_'):
+            if not attr_name.startswith("_"):
                 setattr(current_module, attr_name, getattr(interface, attr_name))
 
         return False
+
 
 # Initialize the interface
 _initialize_module_interface()

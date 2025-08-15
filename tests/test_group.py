@@ -44,7 +44,7 @@ class TestGroup:
         comp1.render.assert_called_once_with(console)
         comp2.render.assert_called_once_with(console)
 
-    @patch('builtins.open', new_callable=mock_open)
+    @patch("builtins.open", new_callable=mock_open)
     def test_clicycle_group_context_manager(self, _mock_file):
         """Test Clicycle group context manager."""
         cli = Clicycle()
@@ -57,7 +57,7 @@ class TestGroup:
         original_stream = cli.stream
         original_stream.render = MagicMock()
 
-        with patch('clicycle.clicycle.RenderStream') as mock_stream_class:
+        with patch("clicycle.clicycle.RenderStream") as mock_stream_class:
             # Set up mock stream to track history
             mock_temp_stream = MagicMock()
             mock_temp_stream.history = [mock_component1, mock_component2]
@@ -77,7 +77,7 @@ class TestGroup:
         assert isinstance(rendered_group, Group)
         assert rendered_group.components == [mock_component1, mock_component2]
 
-    @patch('builtins.open', new_callable=mock_open)
+    @patch("builtins.open", new_callable=mock_open)
     def test_clicycle_group_empty(self, _mock_file):
         """Test Clicycle group with no components."""
         cli = Clicycle()
@@ -86,7 +86,7 @@ class TestGroup:
         original_stream = cli.stream
         original_stream.render = MagicMock()
 
-        with patch('clicycle.clicycle.RenderStream') as mock_stream_class:
+        with patch("clicycle.clicycle.RenderStream") as mock_stream_class:
             # Set up mock stream with empty history
             mock_temp_stream = MagicMock()
             mock_temp_stream.history = []
@@ -104,11 +104,10 @@ class TestGroupIntegration:
 
     def test_group_through_module_interface(self):
         """Test accessing group through module interface."""
-        assert hasattr(cc, 'group')
+        assert hasattr(cc, "group")
         assert callable(cc.group)
 
         # Should return the group context manager
         group_ctx = cc.group()
-        assert hasattr(group_ctx, '__enter__')
-        assert hasattr(group_ctx, '__exit__')
-
+        assert hasattr(group_ctx, "__enter__")
+        assert hasattr(group_ctx, "__exit__")

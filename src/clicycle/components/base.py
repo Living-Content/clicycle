@@ -51,7 +51,7 @@ class Component(ABC):
         """Render this component with appropriate spacing."""
         # For deferred components (progress/spinner), don't do anything here
         # They handle their own spacing and rendering when their context manager starts
-        if hasattr(self, 'deferred_render') and self.deferred_render:
+        if hasattr(self, "deferred_render") and self.deferred_render:
             return
 
         # Apply spacing

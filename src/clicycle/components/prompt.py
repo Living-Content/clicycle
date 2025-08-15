@@ -24,13 +24,11 @@ class Prompt(Component):
 
     def render(self, console: Console) -> None:
         """Render the prompt and get input."""
-        self.result = RichPrompt.ask(
-            self.text, console=console, **self.kwargs
-        )
+        self.result = RichPrompt.ask(self.text, console=console, **self.kwargs)
 
     def ask(self) -> Any:
         """Return the result from render."""
-        return getattr(self, 'result', None)
+        return getattr(self, "result", None)
 
 
 class Confirm(Component):
@@ -53,7 +51,7 @@ class Confirm(Component):
 
     def ask(self) -> bool:
         """Return the result from render."""
-        return getattr(self, 'result', False)
+        return getattr(self, "result", False)
 
 
 class SelectList(Component):
@@ -104,4 +102,4 @@ class SelectList(Component):
 
     def ask(self) -> str:
         """Return the result from render."""
-        return getattr(self, 'result', '')
+        return getattr(self, "result", "")

@@ -61,7 +61,7 @@ cc.table(
         {"Metric": "CPU Usage", "Value": "45%"},
         {"Metric": "Memory", "Value": "2.1 GB"},
     ],
-    title="System Metrics"
+    title="System Metrics",
 )
 
 # Progress indicators

@@ -219,9 +219,20 @@ class Theme:
             raise ValueError(f"Width must be an integer >= 20, got {self.width}")
 
         # Validate spinner type
-        valid_spinners = {"dots", "dots2", "dots3", "line", "star", "bouncingBar", "arc", "arrow"}
+        valid_spinners = {
+            "dots",
+            "dots2",
+            "dots3",
+            "line",
+            "star",
+            "bouncingBar",
+            "arc",
+            "arrow",
+        }
         if self.spinner_type not in valid_spinners:
-            raise ValueError(f"Invalid spinner type '{self.spinner_type}'. Must be one of: {', '.join(valid_spinners)}")
+            raise ValueError(
+                f"Invalid spinner type '{self.spinner_type}'. Must be one of: {', '.join(valid_spinners)}"
+            )
 
         # Pre-compute and cache frequently used style combinations
         self._style_cache.update(

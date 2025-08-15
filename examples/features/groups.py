@@ -57,4 +57,3 @@ with cc.group():
     cc.info("Pending: 4")
 
 cc.success("Groups are useful for creating compact, related content blocks!")
-

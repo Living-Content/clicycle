@@ -59,7 +59,6 @@ class Clicycle:
         self.console.clear()
         self.stream.clear_history()
 
-
     @contextmanager
     def group(self) -> Iterator[Clicycle]:
         """Context manager for rendering components without spacing between them.

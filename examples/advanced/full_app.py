@@ -288,7 +288,7 @@ def main():
     debug = "--debug" in sys.argv or "-d" in sys.argv
 
     if debug:
-        logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
+        logging.basicConfig(level=logging.DEBUG, format="%(levelname)s: %(message)s")
     else:
         logging.basicConfig(level=logging.INFO)
 
@@ -296,9 +296,16 @@ def main():
     cli = Clicycle(app_name="Clicycle Showcase")
 
     if debug:
-        cli.stream.render(Info(cli.theme, "Running in DEBUG mode - debug messages will be shown"))
+        cli.stream.render(
+            Info(cli.theme, "Running in DEBUG mode - debug messages will be shown")
+        )
     else:
-        cli.stream.render(Info(cli.theme, "Running in NORMAL mode - debug messages hidden (use --debug to see them)"))
+        cli.stream.render(
+            Info(
+                cli.theme,
+                "Running in NORMAL mode - debug messages hidden (use --debug to see them)",
+            )
+        )
 
     logger.debug("Application initialized")
 

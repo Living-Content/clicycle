@@ -30,7 +30,7 @@ class TestRenderStream:
 
         component = Info(theme, "Test message")
 
-        with patch.object(component, 'render_with_spacing') as mock_render:
+        with patch.object(component, "render_with_spacing") as mock_render:
             stream.render(component)
 
             # Should have been rendered
@@ -139,7 +139,7 @@ class TestRenderStream:
         # Render second component
         info2 = Info(theme, "Second")
 
-        with patch.object(info2, 'set_context') as mock_set_context:
+        with patch.object(info2, "set_context") as mock_set_context:
             stream.render(info2)
 
             # Should have been given the first component as context

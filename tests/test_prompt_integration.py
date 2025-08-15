@@ -12,7 +12,7 @@ class TestPromptIntegration:
 
     def test_prompt_full_flow(self):
         """Test prompt through clicycle wrapper."""
-        with patch('rich.prompt.Prompt.ask') as mock_rich_ask:
+        with patch("rich.prompt.Prompt.ask") as mock_rich_ask:
             mock_rich_ask.return_value = "user input"
 
             result = cc.prompt("Enter name", default="John")
@@ -21,15 +21,15 @@ class TestPromptIntegration:
             mock_rich_ask.assert_called_once()
             call_args = mock_rich_ask.call_args
             assert call_args[0][0] == "Enter name"
-            assert call_args.kwargs.get('default') == "John"
-            assert isinstance(call_args.kwargs.get('console'), Console)
+            assert call_args.kwargs.get("default") == "John"
+            assert isinstance(call_args.kwargs.get("console"), Console)
 
             # Should return the user input
             assert result == "user input"
 
     def test_confirm_full_flow(self):
         """Test confirm through clicycle wrapper."""
-        with patch('rich.prompt.Confirm.ask') as mock_rich_ask:
+        with patch("rich.prompt.Confirm.ask") as mock_rich_ask:
             mock_rich_ask.return_value = True
 
             result = cc.confirm("Are you sure?", default=False)
@@ -38,8 +38,8 @@ class TestPromptIntegration:
             mock_rich_ask.assert_called_once()
             call_args = mock_rich_ask.call_args
             assert call_args[0][0] == "Are you sure?"
-            assert call_args.kwargs.get('default') is False
-            assert isinstance(call_args.kwargs.get('console'), Console)
+            assert call_args.kwargs.get("default") is False
+            assert isinstance(call_args.kwargs.get("console"), Console)
 
             # Should return the boolean result
             assert result is True
@@ -48,7 +48,7 @@ class TestPromptIntegration:
         """Test select_list through clicycle wrapper."""
         options = ["option1", "option2", "option3"]
 
-        with patch('rich.prompt.Prompt.ask') as mock_rich_ask:
+        with patch("rich.prompt.Prompt.ask") as mock_rich_ask:
             mock_rich_ask.return_value = "2"
 
             result = cc.select_list("item", options, default="option2")
@@ -57,8 +57,8 @@ class TestPromptIntegration:
             mock_rich_ask.assert_called_once()
             call_args = mock_rich_ask.call_args
             assert "Select a item" in call_args[0][0]
-            assert call_args.kwargs.get('default') == "2"  # Default index
-            assert isinstance(call_args.kwargs.get('console'), Console)
+            assert call_args.kwargs.get("default") == "2"  # Default index
+            assert isinstance(call_args.kwargs.get("console"), Console)
 
             # Should return the selected option
             assert result == "option2"
@@ -66,8 +66,8 @@ class TestPromptIntegration:
     def test_prompt_spacing(self):
         """Test that prompts get proper spacing through the stream."""
         with (
-            patch('rich.prompt.Prompt.ask') as mock_rich_ask,
-            patch('clicycle.rendering.stream.RenderStream.render') as mock_render
+            patch("rich.prompt.Prompt.ask") as mock_rich_ask,
+            patch("clicycle.rendering.stream.RenderStream.render") as mock_render,
         ):
             mock_rich_ask.return_value = "test"
 
@@ -79,8 +79,8 @@ class TestPromptIntegration:
     def test_multiple_prompts_in_sequence(self):
         """Test multiple prompts in sequence work correctly."""
         with (
-            patch('rich.prompt.Prompt.ask') as mock_prompt,
-            patch('rich.prompt.Confirm.ask') as mock_confirm
+            patch("rich.prompt.Prompt.ask") as mock_prompt,
+            patch("rich.prompt.Confirm.ask") as mock_confirm,
         ):
             mock_prompt.return_value = "John"
             mock_confirm.return_value = True
@@ -98,8 +98,8 @@ class TestPromptIntegration:
         options = ["red", "green", "blue"]
 
         with (
-            patch('rich.prompt.Prompt.ask') as mock_rich_ask,
-            patch.object(cc._cli.console, 'print') as mock_print
+            patch("rich.prompt.Prompt.ask") as mock_rich_ask,
+            patch.object(cc._cli.console, "print") as mock_print,
         ):
             mock_rich_ask.return_value = "1"
 
@@ -115,38 +115,31 @@ class TestPromptIntegration:
 
     def test_prompt_with_kwargs(self):
         """Test that prompt passes through all kwargs correctly."""
-        with patch('rich.prompt.Prompt.ask') as mock_rich_ask:
+        with patch("rich.prompt.Prompt.ask") as mock_rich_ask:
             mock_rich_ask.return_value = "password123"
 
             result = cc.prompt(
-                "Enter password",
-                password=True,
-                default="",
-                show_default=False
+                "Enter password", password=True, default="", show_default=False
             )
 
             # Check kwargs were passed through
             call_kwargs = mock_rich_ask.call_args.kwargs
-            assert call_kwargs.get('password') is True
-            assert call_kwargs.get('default') == ""
-            assert call_kwargs.get('show_default') is False
+            assert call_kwargs.get("password") is True
+            assert call_kwargs.get("default") == ""
+            assert call_kwargs.get("show_default") is False
 
             assert result == "password123"
 
     def test_confirm_with_kwargs(self):
         """Test that confirm passes through all kwargs correctly."""
-        with patch('rich.prompt.Confirm.ask') as mock_rich_ask:
+        with patch("rich.prompt.Confirm.ask") as mock_rich_ask:
             mock_rich_ask.return_value = False
 
-            result = cc.confirm(
-                "Delete file?",
-                default=False,
-                show_default=True
-            )
+            result = cc.confirm("Delete file?", default=False, show_default=True)
 
             # Check kwargs were passed through
             call_kwargs = mock_rich_ask.call_args.kwargs
-            assert call_kwargs.get('default') is False
-            assert call_kwargs.get('show_default') is True
+            assert call_kwargs.get("default") is False
+            assert call_kwargs.get("show_default") is True
 
             assert result is False

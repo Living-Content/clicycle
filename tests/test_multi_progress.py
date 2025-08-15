@@ -113,4 +113,3 @@ class TestMultiProgress:
 
             # Check console is passed
             assert call_args[1]["console"] is console
-
