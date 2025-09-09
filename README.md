@@ -53,6 +53,7 @@ cc.section("Section Name")
 
 # Data display
 cc.table([{"Name": "Alice", "Age": 30}], title="Users")
+cc.table(data, column_widths={"ID": 40, "Name": 20}, wrap_text=False)
 cc.code("print('hello')", language="python", title="Example")
 cc.json({"key": "value"}, title="Config")
 
@@ -83,6 +84,33 @@ with cc.group():
     cc.info("These lines")
     cc.success("appear together")
     cc.warning("without spacing")
+```
+
+### Table Options
+
+The `table` function supports advanced formatting options:
+
+```python
+# Basic table
+cc.table([{"Name": "Alice", "Age": 30}])
+
+# Table with title
+cc.table(data, title="User List")
+
+# Table with custom column widths (in characters)
+cc.table(data, column_widths={"ID": 40, "Name": 20, "Description": 60})
+
+# Table with text wrapping control
+cc.table(data, wrap_text=True)   # Allow text wrapping (default)
+cc.table(data, wrap_text=False)  # Use ellipsis for long text
+
+# Combined options
+cc.table(
+    data,
+    title="Project Status",
+    column_widths={"Project ID": 40, "Status": 15},
+    wrap_text=False
+)
 ```
 
 ### Configuration
