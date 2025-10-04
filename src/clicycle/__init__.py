@@ -62,7 +62,7 @@ if TYPE_CHECKING:
     ) -> str: ...
 
 
-__version__ = "3.1.5"
+__version__ = "3.1.3"
 
 # Core exports
 __all__ = [
