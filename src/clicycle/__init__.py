@@ -6,7 +6,7 @@ import inspect
 import sys
 from pathlib import Path
 from types import ModuleType
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from clicycle.clicycle import Clicycle
 from clicycle.components.spinner import Spinner
@@ -62,7 +62,7 @@ if TYPE_CHECKING:
     ) -> str: ...
 
 
-__version__ = "3.1.4"
+__version__ = "3.1.5"
 
 # Core exports
 __all__ = [
