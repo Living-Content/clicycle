@@ -8,6 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.6] - 2025-10-05
+
+### Fixed
+
+- Fixed test expectations for console width handling (tests now properly check
+  Clicycle.width instead of console.width)
+- Added comprehensive test coverage for special attribute access and dynamic
+  function creation
+
 ## [3.1.5] - 2025-10-05
 
 ### Added
