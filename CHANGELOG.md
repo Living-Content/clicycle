@@ -1,20 +1,44 @@
 <!-- markdownlint-configure-file {"MD024": { "siblings_only": true, "allow_different_nesting": true }} -->
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [3.1.5] - 2025-10-05
 
 ### Added
 
-- **Type Annotations:** Added comprehensive type stubs for all dynamically created convenience functions (`info`, `warning`, `section`, `table`, etc.) to improve mypy compatibility and IDE support
+- **Type Annotations:** Added comprehensive type stubs for all dynamically
+  created convenience functions (`info`, `warning`, `section`, `table`, etc.) to
+  improve mypy compatibility and IDE support
 
 ### Fixed
 
-- Resolved mypy type checking issues for dynamically created module attributes by using `TYPE_CHECKING` imports
+- Resolved mypy type checking issues for dynamically created module attributes
+  by using `TYPE_CHECKING` imports
+
+## [3.1.4] - 2025-08-06
+
+### Added
+
+- **Table Component Enhancements:** Added `column_widths` and `wrap_text`
+  support to Table component for better text formatting control
+
+## [3.1.3] - 2025-08-06
+
+### Added
+
+- **Code Component:** Enabled word wrapping for code component to improve
+  readability of long code snippets
+
+### Fixed
+
+- Cleaned up linting issues in module interface code
+- Resolved linting issues that were preventing CI/CD pipeline from passing
 
 ## [3.1.2] - 2025-08-06
 
@@ -27,7 +51,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Native PyInstaller support** - Clicycle now automatically detects and works in frozen environments without requiring wrapper files
+- **Native PyInstaller support** - Clicycle now automatically detects and works
+  in frozen environments without requiring wrapper files
 - Graceful fallback when `sys.modules` replacement fails in frozen environments
 - Test coverage for module interface initialization
 
@@ -37,24 +62,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Module interface initialization now works automatically in PyInstaller frozen executables
+- Module interface initialization now works automatically in PyInstaller frozen
+  executables
 
 ## [3.1.0] - 2025-08-06
 
 ### Added
 
 - **Performance Optimizations:**
+
   - Console instance caching for improved performance
   - Render history limiting (default 100 components) to prevent memory growth
   - Smart rendering pipeline optimizations
 
 - **Input Validation:**
+
   - Text components now validate string inputs (TypeError for non-strings)
   - Empty string validation (ValueError for empty messages)
   - Theme parameter validation (width >= 20, valid spinner types)
   - Clear error messages for better developer experience
 
 - **API Documentation:**
+
   - Comprehensive docstrings for all major components
   - Usage examples in docstrings
   - Parameter descriptions and type hints
@@ -71,14 +100,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Coverage path in pytest configuration from `--cov=clicycle` to `--cov=src/clicycle`
+- Coverage path in pytest configuration from `--cov=clicycle` to
+  `--cov=src/clicycle`
 - Validation example now uses `contextlib.suppress` for cleaner code
 
 ## [3.0.0] - 2025-08-06
 
 ### Removed
 
-- BREAKING: Debug component removed; use Python's standard `logging` module instead
+- BREAKING: Debug component removed; use Python's standard `logging` module
+  instead
 - BREAKING: Removed all `cc.debug()` functionality
 - BREAKING: Removed Click context integration for verbose/debug mode
 
@@ -129,7 +160,8 @@ logger.debug("Debug message")
 
 ### Fixed
 
-- Fixed incorrect table usage in all_components.py example (was using non-existent headers/rows parameters)
+- Fixed incorrect table usage in all_components.py example (was using
+  non-existent headers/rows parameters)
 
 ## [2.2.3] - 2025-08-06
 
@@ -148,7 +180,8 @@ logger.debug("Debug message")
 
 ### Fixed
 
-- app_name now properly displays in headers when configured via `cc.configure(app_name="MyApp")` or `Clicycle(app_name="MyApp")`
+- app_name now properly displays in headers when configured via
+  `cc.configure(app_name="MyApp")` or `Clicycle(app_name="MyApp")`
 
 ## [2.2.0] - 2025-08-06
 
@@ -160,7 +193,8 @@ logger.debug("Debug message")
 
 ### Fixed
 
-- Test architecture now properly tests clicycle wrappers instead of bypassing them
+- Test architecture now properly tests clicycle wrappers instead of bypassing
+  them
 - Improved test coverage to 96% overall
 
 ### Changed
@@ -178,7 +212,8 @@ logger.debug("Debug message")
 
 ### Fixed
 
-- Fixed blank line appearing between progress bar descriptions and actual progress bars
+- Fixed blank line appearing between progress bar descriptions and actual
+  progress bars
 - Fixed spacing issues for persistent (non-disappearing) spinners
 - Improved deferred rendering architecture for progress/spinner components
 - Fixed debug components interfering with live displays
@@ -194,7 +229,8 @@ logger.debug("Debug message")
 
 ### Fixed
 
-- Actually includes the progress bar rendering fixes from v2.1.1 (v2.1.1 was released prematurely without the fixes)
+- Actually includes the progress bar rendering fixes from v2.1.1 (v2.1.1 was
+  released prematurely without the fixes)
 - Progress bar description now correctly appears on its own line above the bar
 - Fixed all test and linting issues
 
@@ -202,7 +238,8 @@ logger.debug("Debug message")
 
 ### Fixed
 
-- Progress bar description now appears on its own line above the bar for better readability
+- Progress bar description now appears on its own line above the bar for better
+  readability
 - Removed duplicate percentage display in progress bars
 - Fixed spacing issues between progress/spinner components and other components
 - Progress and spinner components no longer cause double rendering
@@ -212,15 +249,18 @@ logger.debug("Debug message")
 ### Added
 
 - `multi_progress()` context manager for tracking multiple concurrent tasks
-- `group()` context manager for rendering components without spacing (formerly `block()`)
+- `group()` context manager for rendering components without spacing (formerly
+  `block()`)
 - New `modifiers` module for non-component rendering modifiers
-- Dedicated example for demonstrating group functionality (`examples/features/groups.py`)
+- Dedicated example for demonstrating group functionality
+  (`examples/features/groups.py`)
 - Multi-task progress tracking in all_components example
 
 ### Fixed
 
 - Progress bar context manager now properly handles updates
-- Menu example no longer displays ANSI codes when arrow keys are pressed after "Press Enter to continue"
+- Menu example no longer displays ANSI codes when arrow keys are pressed after
+  "Press Enter to continue"
 - All linting issues resolved (ruff and mypy clean)
 
 ### Changed
@@ -232,7 +272,8 @@ logger.debug("Debug message")
 
 ### Fixed
 
-- Updated PyPI version badge to use shields.io instead of badge.fury.io for better reliability
+- Updated PyPI version badge to use shields.io instead of badge.fury.io for
+  better reliability
 - Badge now correctly shows the latest PyPI version without caching delays
 
 ## [2.0.1] - 2025-01-05
@@ -242,7 +283,8 @@ logger.debug("Debug message")
 - Added comprehensive type annotations for mypy strict mode compliance
 - Fixed type compatibility issues in prompt and interactive components
 - Updated all `__exit__` methods to use `Literal[False]` return type
-- Fixed module import approach in interactive components to avoid attribute errors
+- Fixed module import approach in interactive components to avoid attribute
+  errors
 - Ensured all components pass mypy strict mode checks
 
 ### Changed

@@ -142,6 +142,33 @@ class TestModuleInterface:
             # Should return the MultiProgress instance
             assert result is mock_mp_instance
 
+    def test_multi_progress_function_creation(self):
+        """Test that multi_progress function is created by __getattr__."""
+        # Clear any cached function
+        if hasattr(cc, "multi_progress"):
+            delattr(cc, "multi_progress")
+
+        # Access multi_progress to trigger __getattr__
+        func = cc.multi_progress
+
+        # Should be a callable function
+        assert callable(func)
+        assert func.__name__ == "multi_progress"
+
+    def test_special_attributes(self):
+        """Test access to special attributes that go through __getattr__."""
+        # Test console attribute (handled by _handle_special_attribute)
+        console = cc.console
+        assert console is cc._cli.console
+
+        # Test configure function (handled by _handle_special_attribute)
+        configure_func = cc.configure
+        assert callable(configure_func)
+
+        # Test clear function (handled by _handle_special_attribute)
+        clear_func = cc.clear
+        assert callable(clear_func)
+
     def test_attribute_error_for_unknown(self):
         """Test that unknown attributes raise AttributeError."""
         try:
